@@ -1,4 +1,5 @@
 #! /usr/bin/python3
+# -*- coding: utf-8 -*-
 
 import sys
 from xml.dom import minidom
@@ -23,7 +24,7 @@ class ChampGravite:
         :type  acceleration: par exemple, tuple(float, float)
         """
 
-def main:
+def main():
 
     app = QtWidgets.QApplication(sys.argv)
 
