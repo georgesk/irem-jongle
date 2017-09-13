@@ -55,3 +55,6 @@ doc
 
 # no backups
 *backup*
+
+# user interfaces
+Ui_*.py
