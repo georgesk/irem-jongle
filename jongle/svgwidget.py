@@ -18,11 +18,11 @@ class SVGWidget(QtSvg.QSvgWidget):
         :type parent: QtWidgets.QWidget
         :param svg: nom du fichier SVG
         :type svg: str
-       """
+        """
         QtSvg.QSvgWidget.__init__(self, parent)
         self.svg=svg
-        self.delta_t=getattr(parent, "delta_t", 40e-3)
-        self.ech=getattr(parent, "ech", 0.01)
+        self.delta_t=None
+        self.ech=None
         self.doc=None
         if self.svg:
             self.loadfile()
@@ -48,16 +48,14 @@ class SVGWidget(QtSvg.QSvgWidget):
         elements <g> du DOM, qui ont un attribut transform="matrix(a,b,c,d,e,f)"
         """
         for g in self.doc.getElementsByTagName("g"):
-            #try:
-            if 1:
+            try:
                 m= eval(g.getAttribute("transform"))
                 if isinstance(m, matrix):
                     ident=g.getAttribute("id")
                     o=ObjetPhysique(self,ident, g, m)
                     self.objetsPhysiques[ident]=o
-                    print("GRRRR",o)
-            #except:
-            #    pass
+            except:
+                pass
         return
 
     def refresh(self):

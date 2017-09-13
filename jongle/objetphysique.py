@@ -39,6 +39,6 @@ class ObjetPhysique():
         return
 
     def accelere(self, ax, ay):
-        self.vx+=ax*parent.delta_t
-        self.vy+=ay*parent.delta_t
+        self.vx+=ax*self.parent.delta_t
+        self.vy+=ay*self.parent.delta_t
         return
