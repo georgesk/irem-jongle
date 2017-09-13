@@ -21,16 +21,12 @@ class ChampGravite:
         :type  acceleration: par exemple, tuple(float, float)
         """
         self.acc = acceleration
-
         def fonction(obj):
             obj.accelere(self.acc[0], self.acc[1])
             return
-
         parent.hooks.append(fonction)
         return
 
-    def __str__(self):
-        return "ChampGravite(cible : {g}, echelle: {ech}, accélération: {acc})".format(**self.__dict__)
         
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -69,7 +65,13 @@ def main():
 
     w=MainWindow(svg="ballon.svg")
     w.show()
-    g=ChampGravite(w, (0, 9.8))
+    #g=ChampGravite(w, (0, 9.8))
+    ### mise en place de la gravité
+    def fonction(obj):
+        obj.accelere(self.acc[0], self.acc[1])
+        return
+    w.hooks.append(fonction)
+
     
     sys.exit(app.exec_())
     return
