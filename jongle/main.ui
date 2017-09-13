@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>840</width>
-    <height>757</height>
+    <height>767</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,7 +36,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="media-playback-start-symbolic"/>
+          <iconset theme="media-playback-start-symbolic">
+           <normaloff>.</normaloff>.</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -58,7 +59,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="media-plyback-stop-symbolic"/>
+          <iconset theme="media-plyback-stop-symbolic">
+           <normaloff>.</normaloff>.</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -87,7 +89,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="sceneTab">
        <attribute name="title">
@@ -95,7 +97,7 @@
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="SVGWidget" name="widget" native="true">
+         <widget class="SVGWidget" name="svgWidget" native="true">
           <property name="minimumSize">
            <size>
             <width>800</width>
@@ -136,6 +138,19 @@
               <string>Check Synta&amp;x</string>
              </property>
             </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </widget>
@@ -253,7 +268,7 @@
   <customwidget>
    <class>SVGWidget</class>
    <extends>QWidget</extends>
-   <header>svgwidget</header>
+   <header>.svgwidget</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

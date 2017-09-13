@@ -2,35 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from xml.dom import minidom
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg
 
-hooks=[]
-"""
-:var  hooks: une liste de procédures qu'on accrocher et décrocher
-:type hooks: [function, ...]
-"""
-class matrix:
-    """
-    classe qui mime l'attribut matrix d'un <DOM Element: g>
-    """
-    def __init__(self, a,b,c,d,e,f):
-        self.a=a
-        self.b=b
-        self.c=c
-        self.d=d
-        self.e=e
-        self.f=f
-        return
+from .Ui_main import Ui_MainWindow
 
-    def __str__(self):
-        return "matrix({a},{b},{c},{d},{e},{f})".format(**self.__dict__)
-
-    def move(self,x,y):
-        self.e+=x
-        self.f+=y
-        return
-    
 class ChampGravite:
     """
     Cette classe enregistre une méthode à activer toutes les
@@ -38,62 +13,64 @@ class ChampGravite:
     SVG
     """
 
-    def __init__(self,
-                 svgObjet, group, echelle, acceleration):
+    def __init__(self, parent, acceleration):
         """
-        :param svgObjet:    un objet SVG
-        :type  svgObjet:    xml.dom
-        :param group: désigne un des groupes <g> de l'image
-        :type  group: <DOM Element: g>
-        :param echelle:     l'échelle de l'accélération par rapport à l'image
-        :type  echelle:     float
+        :param parent: le widget parent qui contient les crochets (hooks)
+        :type  parent: MainWindow
         :param acceleration: le vecteur accélération en 2D
         :type  acceleration: par exemple, tuple(float, float)
         """
-        self.svg = svgObjet
-        self.g  = group
-        self.ech = echelle
         self.acc = acceleration
 
-        def fonction():
-            mat=eval(self.g.getAttribute("transform"))
-            mat.move(self.ech*self.acc[0], self.ech*self.acc[1])
-            self.g.setAttribute("transform", str(mat))
+        def fonction(obj):
+            obj.accelere(self.acc[0], self.acc[1])
             return
 
-        hooks.append(fonction)
+        parent.hooks.append(fonction)
         return
 
     def __str__(self):
         return "ChampGravite(cible : {g}, echelle: {ech}, accélération: {acc})".format(**self.__dict__)
         
-w=None
-doc=None
 
-def runhooks():
-    """
-    Fonction rappelée toutes les 40 millisecondes.
+class MainWindow(QtWidgets.QMainWindow):
+    def __init__(self, parent=None, svg=None):
+        QtWidgets.QMainWindow.__init__(self,parent)
+        self.ui=Ui_MainWindow()
+        self.ui.setupUi(self)
+        if svg:
+            self.ui.svgWidget.loadfile(svg)
+        self.ui.tabWidget.setCurrentWidget(self.ui.sceneTab)
+        self.delta_t=40e-3
+        self.ech=0.1
+        self.hooks=[]
+        self.timer=QtCore.QTimer()
+        self.timer.timeout.connect(self.runhooks)
+        self.timer.start(1000*self.delta_t)
 
-    Elle provoque l'exécution de chaque fonction de la liste
-    globale hooks.
-    """
-    for h in hooks:
-        h()
-    w.load(doc.toxml(encoding="utf-8"))
-    return
+    def runhooks(self):
+        """
+        Fonction rappelée par le timer, toutes les 40 millisecondes.
+
+        Elle provoque l'exécution de chaque fonction de la liste
+        des hooks.
+        """
+        print("GRRRR runhooks", self.ui.svgWidget.objetsPhysiques.items())
+        for i, obj in self.ui.svgWidget.objetsPhysiques.items():
+            for h in self.hooks:
+                h(obj)
+                print("GRRR", i)
+            obj.move()     
+        self.ui.svgWidget.refresh()
+        return
 
 def main():
-    global w
-    global doc
     app = QtWidgets.QApplication(sys.argv)
 
-    doc=minidom.parse("ballon.svg")
-    w=QtSvg.QSvgWidget()
-    w.load(doc.toxml(encoding="utf-8"))
+    w=MainWindow(svg="ballon.svg")
     w.show()
-    g=ChampGravite(doc, doc.getElementsByTagName("g")[0], 0.2, (0, 9.8))
-    timer=QtCore.QTimer()
-    timer.timeout.connect(runhooks)
-    timer.start(40)
+    #g=ChampGravite(doc, doc.getElementsByTagName("g")[0], 0.2, (0, 9.8))
     
     sys.exit(app.exec_())
+    return
+
