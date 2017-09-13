@@ -6,36 +6,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg
 
 from .Ui_main import Ui_MainWindow
 
-class ChampGravite:
-    """
-    Cette classe enregistre une méthode à activer toutes les
-    40 millisecondes et qui peut toucher un objet du document
-    SVG
-    """
-
-    def __init__(self, parent, acceleration):
-        """
-        :param parent: le widget parent qui contient les crochets (hooks)
-        :type  parent: MainWindow
-        :param acceleration: le vecteur accélération en 2D
-        :type  acceleration: par exemple, tuple(float, float)
-        """
-        self.acc = acceleration
-        def fonction(obj):
-            obj.accelere(self.acc[0], self.acc[1])
-            return
-        parent.hooks.append(fonction)
-        return
-
-        
-
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self, parent=None, svg=None):
+    def __init__(self, parent=None, svg=None, delta_t=None, ech=None):
         QtWidgets.QMainWindow.__init__(self,parent)
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
-        self.delta_t=40e-3
-        self.ech=10 #(pixels pour 1 mètre)
+        self.delta_t=delta_t if delta_t else 40e-3
+        self.ech=ech if ech else 20
         self.ui.svgWidget.delta_t=self.delta_t
         self.ui.svgWidget.ech=self.ech
         if svg:
@@ -60,18 +37,35 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.svgWidget.refresh()
         return
 
+    def enregistreFonction(self, fonction):
+        """
+        ajoute une fonction à self.hooks
+        :param fonction: une fonction de rappel
+        :type fonction: une fonction qui a un seul argument, de type 
+        ObjetPhysique.
+        """
+        self.hooks.append(fonction)
+        return
+
 def main():
     app = QtWidgets.QApplication(sys.argv)
 
-    w=MainWindow(svg="ballon.svg")
+    w=MainWindow(svg="ballon.svg", delta_t=40e-3, ech=10)
     w.show()
-    #g=ChampGravite(w, (0, 9.8))
+
     ### mise en place de la gravité
     def fonction(obj):
-        obj.accelere(self.acc[0], self.acc[1])
+        obj.accelere(0,9.8)
         return
-    w.hooks.append(fonction)
+    w.enregistreFonction(fonction)
 
+
+    ### mise en place du rebond
+    def rebond(obj):
+        if obj.y > 50 and obj.vy > 0:
+            obj.vy = -obj.vy
+        return
+    w.enregistreFonction(rebond)
     
     sys.exit(app.exec_())
     return
