@@ -20,11 +20,9 @@ class SVGWidget(QtSvg.QSvgWidget):
     def refresh(self, doc):
         """
         Remet à jour l'affichage en réinterprétant le DOM
-        :param doc: le DOM
+        :param doc: un objet SVG
         :type doc: xml.dom
         """
-        # pas besoin de le faire si le tab parent
-        # est caché
         # le forçage au type QtCore.QByteArray est nécessaire pour Python2
         # qui fait mal la différence entre str et bytes
         self.load(QtCore.QByteArray(doc.toxml(encoding="utf-8")))
