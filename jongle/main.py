@@ -15,6 +15,7 @@ import numpy as np
 from .Ui_main import Ui_MainWindow
 from .objetphysique import ObjetPhysique
 from .matrix import matrix
+from .avance import AvanceWidget
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None,
@@ -59,11 +60,26 @@ class MainWindow(QtWidgets.QMainWindow):
             self.count=len(self.frames)
         else: # pas de fichier vidéo
             self.count=100 # (quatre secondes, à 25 images/seconde)
+        self.ui.progressBar.setRange(0,self.count)
+
         self.hooks=[]
+        self.docs=[]
+        self.simulated=False
+        # la boucle pour afficher les images
         self.timer=QtCore.QTimer()
-        self.timer.timeout.connect(self.showDoc)
+        self.timer.timeout.connect(self.timeHook)
         self.timer.start(1000*self.delta_t)
 
+    def timeHook(self):
+        """
+        fonction de rappel (25 fois par seconde)
+        """
+        if not self.simulated:
+            self.simule()
+        else:
+            self.showDoc()
+        return
+    
     def loadfile(self):
         """
         Récupère un fichier SVG, l'analyse et l'affiche.
@@ -73,28 +89,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.trouveObjetsPhysiques()
         self.ui.svgWidget.refresh(self.doc)
         return
-
-    def objets(self, doc):
-        """
-        trouve la liste d'elements <g> du DOM, qui ont un attribut
-        transform="matrix(a,b,c,d,e,f)"
-        :param doc: un objet SVG
-        :type doc: xml.dom
-        :return: une liste d'objets physiques
-        :rtype: list(ObjetPhysique)
-        """
-        objs=OrderedDict()
-        for g in self.doc.getElementsByTagName("g"):
-            try:
-                m= eval(g.getAttribute("transform"))
-                if isinstance(m, matrix):
-                    ident=g.getAttribute("id")
-                    o=ObjetPhysique(self,ident, g, m)
-                    objs[ident]=o
-            except:
-                pass
-        return objs
-        
 
     def trouveObjetsPhysiques(self):
         """
@@ -120,7 +114,6 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         try:
             if self.currentFrame < self.count:
-                print("GRRRR", self.docs[self.currentFrame])
                 self.ui.svgWidget.refresh(self.docs[self.currentFrame])
                 self.currentFrame +=1
         except:
@@ -150,19 +143,22 @@ class MainWindow(QtWidgets.QMainWindow):
         Réalise la simulation de façon non-interactive, pour len(self.frames)
         images
         """
-        self.docs=[]
-        count=0
-        for frame in self.frames:
-            doc=minidom.parseString("<svg></svg>")
-            for i, obj in self.objetsPhysiques.items():
-                print("GRRRR", i, obj)
-                for h in self.hooks:
-                    h(obj)
-                obj.move()
-                doc.documentElement.appendChild(obj.g)
-            self.insertImage(frame, doc=doc)
-            self.docs.append(doc)
-            print("GRRRR", self.docs)
+        frame=self.frames[self.currentFrame]
+        doc=minidom.parseString("<svg></svg>")
+        for i, obj in self.objetsPhysiques.items():
+            for h in self.hooks:
+                h(obj)
+            obj.move()
+            doc.documentElement.appendChild(obj.g)
+            self.ui.label.setText("%d : %s" %(self.currentFrame, i))
+        self.insertImage(frame, doc=doc)
+        self.docs.append(doc)
+        self.currentFrame+=1
+        self.ui.progressBar.setValue(self.currentFrame)
+        if self.currentFrame == self.count:
+            self.currentFrame=0
+            self.simulated=True
+            self.ui.label.setText(self.tr("The simulation is finished"))
         return
 
     def enregistreFonction(self, fonction):
@@ -240,7 +236,6 @@ def main():
     w=MainWindow(svg="ballon.svg", delta_t=40e-3, ech=20,
                  videofile="videos/ffa-cropped-cut001.avi",
     )
-    w.show()
 
     ### mise en place de la gravité
     def fonction(obj):
@@ -255,8 +250,7 @@ def main():
             obj.vy = -obj.vy
         return
     w.enregistreFonction(rebond)
-    w.simule()
-    
+    w.show()
     sys.exit(app.exec_())
     return
 
