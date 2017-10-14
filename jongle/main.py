@@ -49,16 +49,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.tabWidget.setCurrentWidget(self.ui.sceneTab)
         self.frames=[]
         self.currentFrame=0
-        if videofile:
-            self.cap=cv2.VideoCapture(videofile)
-            ok=True
-            while ok:
-                ok, frame = self.cap.read()
-                if ok:
-                    self.frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-            self.count=len(self.frames)
-        else: # pas de fichier vidéo
-            self.count=100 # (quatre secondes, à 25 images/seconde)
+        self.cap=cv2.VideoCapture(videofile)
+        ok=True
+        while ok:
+            ok, frame = self.cap.read()
+            if ok:
+                self.frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+        #self.count=len(self.frames)
+        self.count=10
         self.ui.progressBar.setRange(0,self.count)
 
         self.hooks=[]
@@ -119,24 +117,6 @@ class MainWindow(QtWidgets.QMainWindow):
             pass
         return
     
-    def runhooks(self):
-        """
-        Fonction rappelée par le timer, toutes les 40 millisecondes.
-
-        Elle provoque l'exécution de chaque fonction de la liste
-        des hooks.
-        """
-        for i, obj in self.objetsPhysiques.items():
-            for h in self.hooks:
-                h(obj)
-            obj.move()
-        if self.frames:
-            self.insertImage(self.frames[self.currentFrame])
-            if self.currentFrame < len(self.frames)-1:
-                self.currentFrame = self.currentFrame+1
-        self.ui.svgWidget.refresh(self.doc)
-        return
-
     def simule(self):
         """
         Réalise la simulation de façon non-interactive, pour len(self.frames)
