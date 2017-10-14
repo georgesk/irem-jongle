@@ -48,8 +48,8 @@ class MainWindow(QtWidgets.QMainWindow):
             ok=True
             while ok:
                 ok, frame = self.cap.read()
-                if ok: self.frames.append(frame)
-            print("GRRRR OK", len(self.frames), "frames")
+                if ok:
+                    self.frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         self.hooks=[]
         self.timer=QtCore.QTimer()
         self.timer.timeout.connect(self.runhooks)
