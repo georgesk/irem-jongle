@@ -40,12 +40,12 @@ class MainWindow(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self,parent)
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
+        self.ui.playButton.clicked.connect(self.startStop)
         self.delta_t=delta_t if delta_t else 40e-3
         self.ech=ech if ech else 20
         self.doc=None
-        if svg:
-            self.svg=svg
-            self.loadfile()
+        self.svg=svg
+        self.loadfile()
         self.ui.tabWidget.setCurrentWidget(self.ui.sceneTab)
         self.frames=[]
         self.currentFrame=0
@@ -55,9 +55,10 @@ class MainWindow(QtWidgets.QMainWindow):
             ok, frame = self.cap.read()
             if ok:
                 self.frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-        #self.count=len(self.frames)
-        self.count=10
+        self.count=len(self.frames)
         self.ui.progressBar.setRange(0,self.count)
+        self.insertImage(self.frames[0], self.doc)
+        self.ui.svgWidget.refresh(self.doc)
 
         self.hooks=[]
         self.docs=[]
@@ -84,7 +85,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.doc=minidom.parse(self.svg)
         self.objetsPhysiques=OrderedDict()
         self.trouveObjetsPhysiques()
-        self.ui.svgWidget.refresh(self.doc)
         return
 
     def trouveObjetsPhysiques(self):
@@ -103,17 +103,26 @@ class MainWindow(QtWidgets.QMainWindow):
                 pass
         return
 
+    def startStop(self):
+        """arrête/relanche le timer"""
+        if self.timer.isActive():
+            self.timer.stop()
+        else:
+            self.timer.start()
+        return
+
     def showDoc(self):
         """
         Fonction rappelée par le timer, toutes les 40 millisecondes.
 
         Elle provoque l'affichage d'une nouvelle image
         """
-        try:
-            if self.currentFrame < self.count:
-                self.ui.svgWidget.refresh(self.docs[self.currentFrame])
-                self.currentFrame +=1
-        except:
+        if self.currentFrame < self.count:
+            self.ui.svgWidget.refresh(self.docs[self.currentFrame])
+            self.currentFrame +=1
+            self.ui.progressBar.setValue(self.currentFrame)
+            self.ui.label.setText(self.tr("video"))
+        else:
             pass
         return
     
@@ -130,8 +139,8 @@ class MainWindow(QtWidgets.QMainWindow):
             obj.move()
             doc.documentElement.appendChild(obj.g)
             self.ui.label.setText("%d : %s" %(self.currentFrame, i))
-        self.insertImage(frame, doc=doc)
-        self.docs.append(doc)
+        self.insertImage(frame, doc)
+        self.docs.append(deepcopy(doc))
         self.currentFrame+=1
         self.ui.progressBar.setValue(self.currentFrame)
         if self.currentFrame == self.count:
