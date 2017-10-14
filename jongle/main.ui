@@ -48,7 +48,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="toolButton">
+        <widget class="QToolButton" name="backButton">
          <property name="minimumSize">
           <size>
            <width>32</width>
@@ -59,7 +59,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="media-plyback-stop-symbolic">
+          <iconset theme="media-skip-backward-symbolic">
            <normaloff>.</normaloff>.</iconset>
          </property>
          <property name="iconSize">

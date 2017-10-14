@@ -41,6 +41,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.playButton.clicked.connect(self.startStop)
+        self.ui.backButton.clicked.connect(self.back)
         self.delta_t=delta_t if delta_t else 40e-3
         self.ech=ech if ech else 20
         self.doc=None
@@ -107,8 +108,19 @@ class MainWindow(QtWidgets.QMainWindow):
         """arrête/relanche le timer"""
         if self.timer.isActive():
             self.timer.stop()
+            self.ui.playButton.setIcon(QtGui.QIcon.fromTheme("media-playback-pause-symbolic"))
         else:
             self.timer.start()
+            self.ui.playButton.setIcon(QtGui.QIcon.fromTheme("media-playback-start-symbolic"))
+        return
+
+    def back(self):
+        """
+        remet le compteur de frames à zéro
+        """
+        self.currentFrame=0
+        if self.simulated:
+            self.showDoc()
         return
 
     def showDoc(self):
