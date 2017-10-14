@@ -15,7 +15,6 @@ import numpy as np
 from .Ui_main import Ui_MainWindow
 from .objetphysique import ObjetPhysique
 from .matrix import matrix
-from .avance import AvanceWidget
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None,
@@ -171,34 +170,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.hooks.append(fonction)
         return
 
-    def insertImage(self, frame):
-        """
-        insère une image juste devant le fond (de type rect)
-        ou remplace l'image qui est juste devant le fond
-        :param frame: une image issue d'un cv2.VideoCapture ... read()
-        :type frame: numpy Array
-        """
-        im = Image.fromarray(frame)
-        out = io.BytesIO()
-        im.save(out, format='PNG')
-        b64=base64.b64encode(out.getvalue())
-        href="data:image/png;base64,"+b64
-        premierObjet=self.doc.getElementsByTagName("g")[0]
-        images=self.doc.getElementsByTagName("image")
-        if not images:
-            image=self.doc.createElement("image")
-            image.setAttribute("x","0")
-            image.setAttribute("y","0")
-            image.setAttribute("width","%d" %im.width)
-            image.setAttribute("height","%d" %im.height)
-            image.setAttribute("preserveAspectRatio","none")
-            image.setAttribute("xlink:href",href)
-            self.doc.documentElement.insertBefore(image, premierObjet)
-        else:
-            images[0].setAttribute("xlink:href",href)
-        return
-            
-    def insertImage(self, frame, doc=None):
+    def insertImage(self, frame, doc):
         """
         insère une image juste devant le fond (de type rect)
         ou remplace l'image qui est juste devant le fond
@@ -217,7 +189,7 @@ class MainWindow(QtWidgets.QMainWindow):
         premierObjet=doc.getElementsByTagName("g")[0]
         images=doc.getElementsByTagName("image")
         if not images:
-            image=self.doc.createElement("image")
+            image=doc.createElement("image")
             image.setAttribute("x","0")
             image.setAttribute("y","0")
             image.setAttribute("width","%d" %im.width)
