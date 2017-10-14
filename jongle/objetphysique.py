@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 class ObjetPhysique():
     def __init__(self, parent, ident, group, matrice, vx=0, vy=0):
