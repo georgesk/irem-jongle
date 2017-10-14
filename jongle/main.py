@@ -131,9 +131,10 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         if self.currentFrame < self.count:
             self.ui.svgWidget.refresh(self.docs[self.currentFrame])
+            self.ui.label.setText(self.tr("video t = ") +
+                                  "%6.3f s" %(self.currentFrame*self.delta_t,))
             self.currentFrame +=1
             self.ui.progressBar.setValue(self.currentFrame)
-            self.ui.label.setText(self.tr("video"))
         else:
             pass
         return
@@ -150,7 +151,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 h(obj)
             obj.move()
             doc.documentElement.appendChild(obj.g)
-            self.ui.label.setText("%d : %s" %(self.currentFrame, i))
+            self.ui.label.setText("simultation, %d/%d : %s" %
+                                  (self.currentFrame, self.count, i))
         self.insertImage(frame, doc)
         self.docs.append(deepcopy(doc))
         self.currentFrame+=1
