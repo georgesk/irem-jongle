@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import sys
+import sys, Image, io, base64
+
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg
+from xml.dom import minidom
+from collections import OrderedDict
 
 import cv2
 import numpy as np
@@ -36,10 +39,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.delta_t=delta_t if delta_t else 40e-3
         self.ech=ech if ech else 20
-        self.ui.svgWidget.delta_t=self.delta_t
-        self.ui.svgWidget.ech=self.ech
+        self.doc=None
         if svg:
-            self.ui.svgWidget.loadfile(svg)
+            self.svg=svg
+            self.loadfile()
         self.ui.tabWidget.setCurrentWidget(self.ui.sceneTab)
         self.frames=[]
         self.currentFrame=0
@@ -50,10 +53,39 @@ class MainWindow(QtWidgets.QMainWindow):
                 ok, frame = self.cap.read()
                 if ok:
                     self.frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+            self.count=len(self.frames)
+        else: # pas de fichier vidéo
+            self.count=100 # (quatre secondes, à 25 images/seconde)
         self.hooks=[]
         self.timer=QtCore.QTimer()
         self.timer.timeout.connect(self.runhooks)
         self.timer.start(1000*self.delta_t)
+
+    def loadfile(self):
+        """
+        Récupère un fichier SVG, l'analyse et l'affiche.
+        """
+        self.doc=minidom.parse(self.svg)
+        self.objetsPhysiques=OrderedDict()
+        self.trouveObjetsPhysiques()
+        self.ui.svgWidget.refresh(self.doc)
+        return
+
+    def trouveObjetsPhysiques(self):
+        """
+        met à jour la liste self.objetsPhysiques avec tous les
+        elements <g> du DOM, qui ont un attribut transform="matrix(a,b,c,d,e,f)"
+        """
+        for g in self.doc.getElementsByTagName("g"):
+            try:
+                m= eval(g.getAttribute("transform"))
+                if isinstance(m, matrix):
+                    ident=g.getAttribute("id")
+                    o=ObjetPhysique(self,ident, g, m)
+                    self.objetsPhysiques[ident]=o
+            except:
+                pass
+        return
 
     def runhooks(self):
         """
@@ -62,15 +94,15 @@ class MainWindow(QtWidgets.QMainWindow):
         Elle provoque l'exécution de chaque fonction de la liste
         des hooks.
         """
-        for i, obj in self.ui.svgWidget.objetsPhysiques.items():
+        for i, obj in self.objetsPhysiques.items():
             for h in self.hooks:
                 h(obj)
             obj.move()
         if self.frames:
-            self.ui.svgWidget.insertImage(self.frames[self.currentFrame])
+            self.insertImage(self.frames[self.currentFrame])
             if self.currentFrame < len(self.frames)-1:
                 self.currentFrame = self.currentFrame+1
-        self.ui.svgWidget.refresh()
+        self.ui.svgWidget.refresh(self.doc)
         return
 
     def enregistreFonction(self, fonction):
@@ -82,6 +114,34 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.hooks.append(fonction)
         return
+
+    def insertImage(self, frame):
+        """
+        insère une image juste devant le fond (de type rect)
+        ou remplace l'image qui est juste devant le fond
+        :param frame: une image issue d'un cv2.VideoCapture ... read()
+        :type frame: numpy Array
+        """
+        im = Image.fromarray(frame)
+        out = io.BytesIO()
+        im.save(out, format='PNG')
+        b64=base64.b64encode(out.getvalue())
+        href="data:image/png;base64,"+b64
+        premierObjet=self.doc.getElementsByTagName("g")[0]
+        images=self.doc.getElementsByTagName("image")
+        if not images:
+            image=self.doc.createElement("image")
+            image.setAttribute("x","0")
+            image.setAttribute("y","0")
+            image.setAttribute("width","%d" %im.width)
+            image.setAttribute("height","%d" %im.height)
+            image.setAttribute("preserveAspectRatio","none")
+            image.setAttribute("xlink:href",href)
+            self.doc.documentElement.insertBefore(image, premierObjet)
+        else:
+            images[0].setAttribute("xlink:href",href)
+        return
+            
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
