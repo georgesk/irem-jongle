@@ -61,7 +61,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.count=100 # (quatre secondes, à 25 images/seconde)
         self.hooks=[]
         self.timer=QtCore.QTimer()
-        self.timer.timeout.connect(self.runhooks)
+        self.timer.timeout.connect(self.showDoc)
         self.timer.start(1000*self.delta_t)
 
     def loadfile(self):
@@ -90,6 +90,17 @@ class MainWindow(QtWidgets.QMainWindow):
                 pass
         return
 
+    def showDoc(self):
+        """
+        Fonction rappelée par le timer, toutes les 40 millisecondes.
+
+        Elle provoque l'affichage d'une nouvelle image
+        """
+        if self.currentFrame < self.count:
+            self.ui.svgWidget.refresh(self.docs[self.currentFrame])
+            self.currentFrame +=1
+        return
+    
     def runhooks(self):
         """
         Fonction rappelée par le timer, toutes les 40 millisecondes.
@@ -159,6 +170,37 @@ class MainWindow(QtWidgets.QMainWindow):
             image.setAttribute("preserveAspectRatio","none")
             image.setAttribute("xlink:href",href)
             self.doc.documentElement.insertBefore(image, premierObjet)
+        else:
+            images[0].setAttribute("xlink:href",href)
+        return
+            
+    def insertImage(self, frame, doc=None):
+        """
+        insère une image juste devant le fond (de type rect)
+        ou remplace l'image qui est juste devant le fond
+        :param frame: une image issue d'un cv2.VideoCapture ... read()
+        :type frame: numpy Array
+        :param doc: a SVG document
+        :type doc: xml.dom
+        """
+        if doc==None:
+            doc=self.doc
+        im = Image.fromarray(frame)
+        out = io.BytesIO()
+        im.save(out, format='PNG')
+        b64=base64.b64encode(out.getvalue())
+        href="data:image/png;base64,"+b64
+        premierObjet=doc.getElementsByTagName("g")[0]
+        images=doc.getElementsByTagName("image")
+        if not images:
+            image=self.doc.createElement("image")
+            image.setAttribute("x","0")
+            image.setAttribute("y","0")
+            image.setAttribute("width","%d" %im.width)
+            image.setAttribute("height","%d" %im.height)
+            image.setAttribute("preserveAspectRatio","none")
+            image.setAttribute("xlink:href",href)
+            doc.documentElement.insertBefore(image, premierObjet)
         else:
             images[0].setAttribute("xlink:href",href)
         return
