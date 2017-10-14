@@ -3,9 +3,6 @@ from __future__ import print_function
 
 from PyQt5 import QtSvg, QtCore
 
-from .matrix import matrix
-from .objetphysique import ObjetPhysique
-
 class SVGWidget(QtSvg.QSvgWidget):
     """
     Un widget SVG amélioré, qui permet de s'occuper de la dynamique de

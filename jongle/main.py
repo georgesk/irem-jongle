@@ -12,6 +12,8 @@ import cv2
 import numpy as np
 
 from .Ui_main import Ui_MainWindow
+from .objetphysique import ObjetPhysique
+from .matrix import matrix
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None,
