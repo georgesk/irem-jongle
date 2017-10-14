@@ -1,0 +1,17 @@
+Football feminin Algérie.mp4 :
+  https://www.youtube.com/watch?v=_zF8UkBQd40
+  Studio21 ecole (Ajoutée le 11 mai 2014)
+  une leçon de jonglage par une footballeuse algérienne.
+  https://www.facebook.com/studio21ecole
+
+ffa-cropped.mp4 :
+  recadrage de la vidéo précédente, par la commande :
+  ffmpeg -i "Football feminin Algérie.mp4" -vf "crop=w=720:h=720:x=124:y=0" ffa-cropped.mp4
+
+ffa-cropped.mp4.dv
+  conversion du précédent au format dv par kino
+  
+ffa-cropped-cut001.avi
+  export entre les temps 2 secondes et 6 secondes, au format AVI DV1
+  par kino.
+  
