@@ -68,8 +68,6 @@ class SVGWidget(QtSvg.QSvgWidget):
             image.setAttribute("height","%d" %im.height)
             image.setAttribute("preserveAspectRatio","none")
             image.setAttribute("xlink:href",href)
-            print("GRRRR", image.toxml(encoding="utf-8")[:120]+"...")
-            print("GRRR premierObjet =", premierObjet)
             self.doc.documentElement.insertBefore(image, premierObjet)
         else:
             images[0].setAttribute("xlink:href",href)
