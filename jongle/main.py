@@ -7,6 +7,7 @@ import sys, Image, io, base64
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg
 from xml.dom import minidom
 from collections import OrderedDict
+from copy import deepcopy
 
 import cv2
 import numpy as np
@@ -106,6 +107,24 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.currentFrame = self.currentFrame+1
         self.ui.svgWidget.refresh(self.doc)
         return
+
+    def simule(self):
+        """
+        Réalise la simulation de façon non-interactive, pour len(self.frames)
+        images
+        """
+        self.docs=[]
+        for frame in self.frames:
+            doc=deepcopy(self.doc)
+            ## self.objets à implémenter !!!!
+            for i, obj in self.objets(doc).items():
+                for h in self.hooks:
+                    h(obj)
+                obj.move()
+            self.insertImage(frame, doc=doc)
+            self.docs.append(doc)
+            
+        
 
     def enregistreFonction(self, fonction):
         """
