@@ -74,6 +74,28 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.svgWidget.refresh(self.doc)
         return
 
+    def objets(self, doc):
+        """
+        trouve la liste d'elements <g> du DOM, qui ont un attribut
+        transform="matrix(a,b,c,d,e,f)"
+        :param doc: un objet SVG
+        :type doc: xml.dom
+        :return: une liste d'objets physiques
+        :rtype: list(ObjetPhysique)
+        """
+        objs=OrderedDict()
+        for g in self.doc.getElementsByTagName("g"):
+            try:
+                m= eval(g.getAttribute("transform"))
+                if isinstance(m, matrix):
+                    ident=g.getAttribute("id")
+                    o=ObjetPhysique(self,ident, g, m)
+                    objs[ident]=o
+            except:
+                pass
+        return objs
+        
+
     def trouveObjetsPhysiques(self):
         """
         met à jour la liste self.objetsPhysiques avec tous les
@@ -96,9 +118,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         Elle provoque l'affichage d'une nouvelle image
         """
-        if self.currentFrame < self.count:
-            self.ui.svgWidget.refresh(self.docs[self.currentFrame])
-            self.currentFrame +=1
+        try:
+            if self.currentFrame < self.count:
+                print("GRRRR", self.docs[self.currentFrame])
+                self.ui.svgWidget.refresh(self.docs[self.currentFrame])
+                self.currentFrame +=1
+        except:
+            pass
         return
     
     def runhooks(self):
@@ -125,17 +151,19 @@ class MainWindow(QtWidgets.QMainWindow):
         images
         """
         self.docs=[]
+        count=0
         for frame in self.frames:
-            doc=deepcopy(self.doc)
-            ## self.objets à implémenter !!!!
-            for i, obj in self.objets(doc).items():
+            doc=minidom.parseString("<svg></svg>")
+            for i, obj in self.objetsPhysiques.items():
+                print("GRRRR", i, obj)
                 for h in self.hooks:
                     h(obj)
                 obj.move()
+                doc.documentElement.appendChild(obj.g)
             self.insertImage(frame, doc=doc)
             self.docs.append(doc)
-            
-        
+            print("GRRRR", self.docs)
+        return
 
     def enregistreFonction(self, fonction):
         """
@@ -227,6 +255,7 @@ def main():
             obj.vy = -obj.vy
         return
     w.enregistreFonction(rebond)
+    w.simule()
     
     sys.exit(app.exec_())
     return
