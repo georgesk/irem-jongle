@@ -6,9 +6,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Paquet jongle &#8212; documentation Jongle 0.1</title>
+    <title>Paquet jongle, contenus du module &#8212; documentation IREM-Jongle 0.1</title>
     
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -27,28 +27,35 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Recherche" href="search.html" />
-    <link rel="top" title="documentation Jongle 0.1" href="index.html" />
+    <link rel="top" title="documentation IREM-Jongle 0.1" href="index.html" />
     <link rel="up" title="jonglage" href="modules.html" />
-    <link rel="prev" title="jonglage" href="modules.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="prev" title="jonglage" href="modules.html" /> 
   </head>
   <body role="document">
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Index général"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Index des modules Python"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="jonglage"
+             accesskey="P">précédent</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">documentation IREM-Jongle 0.1</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">jonglage</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="paquet-jongle">
-<h1>Paquet jongle<a class="headerlink" href="#paquet-jongle" title="Lien permanent vers ce titre">¶</a></h1>
-<div class="section" id="sous-modules">
-<h2>Sous-modules<a class="headerlink" href="#sous-modules" title="Lien permanent vers ce titre">¶</a></h2>
-</div>
+  <div class="section" id="paquet-jongle-contenus-du-module">
+<h1>Paquet jongle, contenus du module<a class="headerlink" href="#paquet-jongle-contenus-du-module" title="Lien permanent vers ce titre">¶</a></h1>
 <div class="section" id="module-jongle.main">
 <span id="module-jongle-main"></span><h2>module jongle.main<a class="headerlink" href="#module-jongle.main" title="Lien permanent vers ce titre">¶</a></h2>
 <dl class="class">
@@ -58,19 +65,16 @@
 <dl class="method">
 <dt id="jongle.main.MainWindow.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>parent=None</em>, <em>svg=None</em>, <em>delta_t=None</em>, <em>ech=None</em>, <em>videofile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/main.html#MainWindow.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.main.MainWindow.__init__" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>le constructeur
-:param parent: un parent
-:type parent: QWidget
-:param svg: un nom de fichier au format SVG
-:type svg: str
-:param delta_t: l&#8217;intervalle de temps entre deux images; la fonction</p>
-<blockquote>
-<div>de rappel self.runhooks est appelée entre deux images</div></blockquote>
+<dd><p>le constructeur</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><ul class="first last simple">
+<li><strong>parent</strong> (<em>QWidget</em>) &#8211; un parent</li>
+<li><strong>svg</strong> (<em>str</em>) &#8211; un nom de fichier au format SVG</li>
+<li><strong>delta_t</strong> (<em>float</em>) &#8211; l&#8217;intervalle de temps entre deux images; la fonction
+de rappel self.runhooks est appelée entre deux images</li>
 <li><strong>ech</strong> (<em>float</em>) &#8211; l&#8217;échelle à appliquer à l&#8217;image</li>
 <li><strong>videofile</strong> (<em>str</em>) &#8211; un fichier video, à 25 images par secondes</li>
 </ul>
@@ -142,8 +146,210 @@ elements &lt;g&gt; du DOM, qui ont un attribut transform=&#8221;matrix(a,b,c,d,e
 <dd></dd></dl>
 
 </div>
-<div class="section" id="module-jongle">
-<span id="contenus-du-module"></span><h2>Contenus du module<a class="headerlink" href="#module-jongle" title="Lien permanent vers ce titre">¶</a></h2>
+<div class="section" id="module-jongle.matrix">
+<span id="module-jongle-matrix"></span><h2>module jongle.matrix<a class="headerlink" href="#module-jongle.matrix" title="Lien permanent vers ce titre">¶</a></h2>
+<dl class="class">
+<dt id="jongle.matrix.matrix">
+<em class="property">class </em><code class="descclassname">jongle.matrix.</code><code class="descname">matrix</code><span class="sig-paren">(</span><em>a</em>, <em>b</em>, <em>c</em>, <em>d</em>, <em>e</em>, <em>f</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/matrix.html#matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.matrix.matrix" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>classe qui mime l&#8217;attribut matrix d&#8217;un &lt;DOM Element: g&gt;</p>
+<p><span class="math">\(\left(\begin{array}{ccc} a &amp; b &amp; e \\ c &amp; d &amp; f \\ 0 &amp; 0 &amp; 1\end{array}\right) \times \left(\begin{array}{c} x \\ y \\ 1 \end{array}\right) = \left(\begin{array}{c} ax+by+e \\ cx+dy+f \\ 1 \end{array}\right)\)</span></p>
+<dl class="method">
+<dt id="jongle.matrix.matrix.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>a</em>, <em>b</em>, <em>c</em>, <em>d</em>, <em>e</em>, <em>f</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/matrix.html#matrix.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.matrix.matrix.__init__" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>le constructeur ; on évoque ci-dessous :</p>
+<blockquote>
+<div><ul class="simple">
+<li>un rapport d&#8217;homotétie <span class="math">\(r\)</span>,</li>
+<li>un angle de rotation <span class="math">\(\theta\)</span>,</li>
+<li>et les coordonnées <span class="math">\((\delta x, \delta y)\)</span>, horizontale et verticale d&#8217;une translation.</li>
+</ul>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><ul class="first last simple">
+<li><strong>a</strong> (<em>float</em>) &#8211; <span class="math">\(= r \cos(\theta)\)</span>, élément de matrice de rotation/homotétie</li>
+<li><strong>b</strong> (<em>float</em>) &#8211; <span class="math">\(= r \sin(\theta)\)</span>, élément de matrice de rotation/homotétie</li>
+<li><strong>c</strong> (<em>float</em>) &#8211; <span class="math">\(= -r \sin(\theta)\)</span>, élément de matrice de rotation/homotétie</li>
+<li><strong>d</strong> (<em>float</em>) &#8211; <span class="math">\(= r \cos(\theta)\)</span>, élément de matrice de rotation/homotétie</li>
+<li><strong>e</strong> (<em>float</em>) &#8211; <span class="math">\(= \delta x\)</span>, translation horizontale</li>
+<li><strong>f</strong> (<em>float</em>) &#8211; <span class="math">\(= \delta y\)</span>, translation verticale</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jongle.matrix.matrix.move">
+<code class="descname">move</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/matrix.html#matrix.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.matrix.matrix.move" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Implémente un déplacement, en modifiant les deux derniers éléments
+de la matrice.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> (<em>float</em>) &#8211; translation horizontale</li>
+<li><strong>y</strong> (<em>float</em>) &#8211; translation verticale</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-jongle.objetphysique">
+<span id="module-jongle-objetphysique"></span><h2>module jongle.objetphysique<a class="headerlink" href="#module-jongle.objetphysique" title="Lien permanent vers ce titre">¶</a></h2>
+<dl class="class">
+<dt id="jongle.objetphysique.ObjetPhysique">
+<em class="property">class </em><code class="descclassname">jongle.objetphysique.</code><code class="descname">ObjetPhysique</code><span class="sig-paren">(</span><em>parent</em>, <em>ident</em>, <em>group</em>, <em>matrice</em>, <em>vx=0</em>, <em>vy=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/objetphysique.html#ObjetPhysique"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.objetphysique.ObjetPhysique" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><dl class="method">
+<dt id="jongle.objetphysique.ObjetPhysique.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>parent</em>, <em>ident</em>, <em>group</em>, <em>matrice</em>, <em>vx=0</em>, <em>vy=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/objetphysique.html#ObjetPhysique.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.objetphysique.ObjetPhysique.__init__" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Définit un objet 2D par ses coordonnées dans l&#8217;espace de phase
+(position, vitesse)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><ul class="first last simple">
+<li><strong>parent</strong> (<a class="reference internal" href="#jongle.svgwidget.SVGWidget" title="jongle.svgwidget.SVGWidget"><em>SVGWidget</em></a>) &#8211; un parent, qui connaît l&#8217;échelle pour dessiner</li>
+<li><strong>ident</strong> (<em>str</em>) &#8211; nom de l&#8217;objet physique</li>
+<li><strong>group</strong> (<em>&lt;DOM Element: g&gt;</em>) &#8211; un groupe de l&#8217;image</li>
+<li><strong>matrice</strong> (<a class="reference internal" href="#jongle.matrix.matrix" title="jongle.matrix.matrix"><em>jongle.matrix.matrix</em></a>) &#8211; l&#8217;attribut de transformation (matrice) du groupe</li>
+<li><strong>vx</strong> (<em>float</em>) &#8211; abscisse de la vitesse</li>
+<li><strong>vy</strong> (<em>float</em>) &#8211; ordonnée de la vitesse</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jongle.objetphysique.ObjetPhysique.accelere">
+<code class="descname">accelere</code><span class="sig-paren">(</span><em>ax</em>, <em>ay</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/objetphysique.html#ObjetPhysique.accelere"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.objetphysique.ObjetPhysique.accelere" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Applique une étape de la méthode d&#8217;Euleur, change les vitesses
+self.vx et self.vy, en appliquant l&#8217;accélération (ax,ay) pendant
+une durée delta_t.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ax</strong> (<em>float</em>) &#8211; accélération horizontale</li>
+<li><strong>ay</strong> (<em>float</em>) &#8211; accélération verticale</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jongle.objetphysique.ObjetPhysique.move">
+<code class="descname">move</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/objetphysique.html#ObjetPhysique.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.objetphysique.ObjetPhysique.move" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Applique une étape de la méthode d&#8217;Euleur, change les coordonnées
+self.x et self.y, en y additionnant respectivement vx*delta_t et
+vy*delta_t. Comme self.g est un objet groupe SVG sous-jacent, on en
+modifie la matrice de transformation, en tenant compte de l&#8217;échelle
+du widget parent.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-jongle.opencv">
+<span id="module-jongle-opencv"></span><h2>module jongle.opencv<a class="headerlink" href="#module-jongle.opencv" title="Lien permanent vers ce titre">¶</a></h2>
+<dl class="function">
+<dt id="jongle.opencv.insertImage">
+<code class="descclassname">jongle.opencv.</code><code class="descname">insertImage</code><span class="sig-paren">(</span><em>frame</em>, <em>doc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/opencv.html#insertImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.opencv.insertImage" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>insère une image (frame) avant les objets SVG de type &#8220;g&#8221; dans
+un document SVG.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><ul class="first simple">
+<li><strong>frame</strong> (<em>numpy Array (encodage BRG comme fait OpenCV)</em>) &#8211; une image issue d&#8217;un cv2.VideoCapture, par read()</li>
+<li><strong>doc</strong> (<em>xml.dom</em>) &#8211; un document SVG</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Retourne:</th><td class="field-body"><p class="first">le document modifié par insertion de l&#8217;image</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Type retourné:</th><td class="field-body"><p class="first last">xml.dom</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="jongle.opencv.videoToRgbFrameList">
+<code class="descclassname">jongle.opencv.</code><code class="descname">videoToRgbFrameList</code><span class="sig-paren">(</span><em>videofile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/opencv.html#videoToRgbFrameList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.opencv.videoToRgbFrameList" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>transforme une vidéo lisible par openCV en une liste d&#8217;images au
+format RGB.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><strong>videofile</strong> (<em>str</em>) &#8211; chemin d&#8217;un fichier vidéo</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Retourne:</th><td class="field-body">liste d&#8217;images RGB</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Type retourné:</th><td class="field-body">numpy Array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-jongle.svgwidget">
+<span id="module-jongle-svgwidget"></span><h2>module jongle.svgwidget<a class="headerlink" href="#module-jongle.svgwidget" title="Lien permanent vers ce titre">¶</a></h2>
+<dl class="class">
+<dt id="jongle.svgwidget.SVGWidget">
+<em class="property">class </em><code class="descclassname">jongle.svgwidget.</code><code class="descname">SVGWidget</code><span class="sig-paren">(</span><em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/svgwidget.html#SVGWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.svgwidget.SVGWidget" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt5.QtSvg.QSvgWidget</span></code></p>
+<p>Un widget SVG amélioré, qui permet de s&#8217;occuper de la dynamique de
+plusieurs objets graphiques</p>
+<dl class="method">
+<dt id="jongle.svgwidget.SVGWidget.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/svgwidget.html#SVGWidget.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.svgwidget.SVGWidget.__init__" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Le constructeur.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><strong>parent</strong> (<em>QtWidgets.QWidget</em>) &#8211; un widget parent</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jongle.svgwidget.SVGWidget.refresh">
+<code class="descname">refresh</code><span class="sig-paren">(</span><em>doc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/svgwidget.html#SVGWidget.refresh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.svgwidget.SVGWidget.refresh" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Remet à jour l&#8217;affichage en réinterprétant le DOM</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><strong>doc</strong> (<em>xml.dom</em>) &#8211; un objet SVG</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 
@@ -155,23 +361,19 @@ elements &lt;g&gt; du DOM, qui ont un attribut transform=&#8221;matrix(a,b,c,d,e
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table des Matières</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Paquet jongle</a><ul>
-<li><a class="reference internal" href="#sous-modules">Sous-modules</a></li>
+<li><a class="reference internal" href="#">Paquet jongle, contenus du module</a><ul>
 <li><a class="reference internal" href="#module-jongle.main">module jongle.main</a></li>
-<li><a class="reference internal" href="#module-jongle">Contenus du module</a></li>
+<li><a class="reference internal" href="#module-jongle.matrix">module jongle.matrix</a></li>
+<li><a class="reference internal" href="#module-jongle.objetphysique">module jongle.objetphysique</a></li>
+<li><a class="reference internal" href="#module-jongle.opencv">module jongle.opencv</a></li>
+<li><a class="reference internal" href="#module-jongle.svgwidget">module jongle.svgwidget</a></li>
 </ul>
 </li>
 </ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  <li><a href="modules.html">jonglage</a><ul>
-      <li>Previous: <a href="modules.html" title="Chapitre précédent">jonglage</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
+
+  <h4>Sujet précédent</h4>
+  <p class="topless"><a href="modules.html"
+                        title="Chapitre précédent">jonglage</a></p>
   <div role="note" aria-label="source link">
     <h3>Cette page</h3>
     <ul class="this-page-menu">
@@ -193,20 +395,25 @@ elements &lt;g&gt; du DOM, qui ont un attribut transform=&#8221;matrix(a,b,c,d,e
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2017, Georges Khaznadar.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.9</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
-      
-      |
-      <a href="_sources/jongle.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Index général"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Index des modules Python"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="jonglage"
+             >précédent</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">documentation IREM-Jongle 0.1</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >jonglage</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Georges Khaznadar.
+      Créé avec <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.9.
+    </div>
   </body>
 </html>

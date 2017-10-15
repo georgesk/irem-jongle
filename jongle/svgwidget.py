@@ -11,6 +11,7 @@ class SVGWidget(QtSvg.QSvgWidget):
     def __init__(self, parent=None):
         """
         Le constructeur.
+
         :param parent: un widget parent
         :type parent: QtWidgets.QWidget
         """
@@ -20,6 +21,7 @@ class SVGWidget(QtSvg.QSvgWidget):
     def refresh(self, doc):
         """
         Remet à jour l'affichage en réinterprétant le DOM
+
         :param doc: un objet SVG
         :type doc: xml.dom
         """

@@ -5,6 +5,7 @@ class ObjetPhysique():
         """
         Définit un objet 2D par ses coordonnées dans l'espace de phase
         (position, vitesse)
+
         :param parent: un parent, qui connaît l'échelle pour dessiner
         :type parent: SVGWidget
         :param ident: nom de l'objet physique
@@ -12,7 +13,7 @@ class ObjetPhysique():
         :param group: un groupe de l'image
         :type group: <DOM Element: g>
         :param matrice: l'attribut de transformation (matrice) du groupe
-        :type matrice: matrix
+        :type matrice: jongle.matrix.matrix
         :param vx: abscisse de la vitesse
         :type vx: float
         :param vy: ordonnée de la vitesse
@@ -32,6 +33,13 @@ class ObjetPhysique():
         return "Objet physique « {id} » : pos=({x}, {y}) vit=({vx}, {vy})".format(**self.__dict__)
 
     def move(self):
+        """
+        Applique une étape de la méthode d'Euleur, change les coordonnées
+        self.x et self.y, en y additionnant respectivement vx*delta_t et
+        vy*delta_t. Comme self.g est un objet groupe SVG sous-jacent, on en
+        modifie la matrice de transformation, en tenant compte de l'échelle
+        du widget parent.
+        """
         self.x+=self.vx*self.parent.delta_t
         self.y+=self.vy*self.parent.delta_t
         self.m.e=self.x*self.parent.ech
@@ -40,6 +48,16 @@ class ObjetPhysique():
         return
 
     def accelere(self, ax, ay):
+        """
+        Applique une étape de la méthode d'Euleur, change les vitesses
+        self.vx et self.vy, en appliquant l'accélération (ax,ay) pendant
+        une durée delta_t.
+
+        :param ax: accélération horizontale
+        :type  ax: float
+        :param ay: accélération verticale
+        :type  ay: float
+        """
         self.vx+=ax*self.parent.delta_t
         self.vy+=ay*self.parent.delta_t
         return

@@ -7,9 +7,11 @@ def videoToRgbFrameList(videofile):
     """
     transforme une vidéo lisible par openCV en une liste d'images au
     format RGB.
+
     :param videofile: chemin d'un fichier vidéo
     :type  videofile: str
-    :return: list(numpy Array pour une image RGB)
+    :return: liste d'images RGB
+    :rtype: numpy Array
     """
     frames=[]
     cap=cv2.VideoCapture(videofile)
@@ -24,6 +26,7 @@ def insertImage(frame, doc):
     """
     insère une image (frame) avant les objets SVG de type "g" dans
     un document SVG.
+
     :param frame: une image issue d'un cv2.VideoCapture, par read()
     :type frame: numpy Array (encodage BRG comme fait OpenCV)
     :param doc: un document SVG

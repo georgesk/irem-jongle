@@ -23,6 +23,7 @@ class MainWindow(QtWidgets.QMainWindow):
     ):
         """
         le constructeur
+
         :param parent: un parent
         :type parent: QWidget
         :param svg: un nom de fichier au format SVG
