@@ -15,7 +15,7 @@
    height="600"
    viewBox="0 0 800 600.00001"
    sodipodi:docname="ballon.svg"
-   inkscape:version="0.92.1 r15371">
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
   <metadata
      id="metadata8">
     <rdf:RDF>
@@ -44,7 +44,7 @@
      id="namedview4"
      showgrid="false"
      inkscape:zoom="1.3183333"
-     inkscape:cx="266.87737"
+     inkscape:cx="400"
      inkscape:cy="300"
      inkscape:window-x="0"
      inkscape:window-y="0"
@@ -54,13 +54,6 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0" />
-  <rect
-     style="opacity:1;fill:#74ff78;fill-opacity:0.99567099;stroke:none;stroke-width:0.57351166;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-     id="fond"
-     width="800"
-     height="600"
-     x="0"
-     y="0" />
   <g
      id="ballon"
      transform="matrix(0.05,0,0,0.05,10,10)">
