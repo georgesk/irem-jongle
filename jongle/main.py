@@ -130,9 +130,12 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         if self.currentFrame < self.count:
             self.ui.svgWidget.refresh(self.docs[self.currentFrame])
-            self.ui.label.setText(self.tr("video t = ") +
-                                  "%6.3f s" %(self.currentFrame*self.delta_t,))
             self.currentFrame +=1
+            self.ui.label.setText(self.tr("video t = ") +
+                                  "%6.3f / %6.3f s" % (
+                                      self.currentFrame*self.delta_t,
+                                      self.count*self.delta_t
+                                  ))
             self.ui.progressBar.setValue(self.currentFrame)
         else:
             pass

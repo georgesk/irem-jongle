@@ -32,6 +32,12 @@
            <height>32</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>Start/Stop [Space bar]</string>
+         </property>
+         <property name="statusTip">
+          <string>Start/Stop [Space bar]</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -45,6 +51,9 @@
            <height>32</height>
           </size>
          </property>
+         <property name="shortcut">
+          <string>Space</string>
+         </property>
         </widget>
        </item>
        <item>
@@ -54,6 +63,12 @@
            <width>32</width>
            <height>32</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>Rerun from beginning [Home]</string>
+         </property>
+         <property name="statusTip">
+          <string>Rerun from beginning [Home]</string>
          </property>
          <property name="text">
           <string/>
@@ -67,6 +82,9 @@
            <width>32</width>
            <height>32</height>
           </size>
+         </property>
+         <property name="shortcut">
+          <string>Home</string>
          </property>
         </widget>
        </item>
@@ -141,7 +159,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="sceneTab">
        <attribute name="title">
