@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 import cv2, Image, io, base64
+from .matrix import matrix
 
 def videoToRgbFrameList(videofile):
     """
@@ -54,3 +55,25 @@ def insertImage(frame, doc):
         images[0].setAttribute("xlink:href",href)
     return doc
 
+def moveGroup(doc, ident, mv, ech):
+    """
+    Déplace un groupe avec une transformation par matrice au sein
+    d'une image SVG.
+
+    :param doc: un document SVG
+    :type  doc: xml.dom
+    :param ident: un identifiant
+    :type  ident: str
+    :param mv: un déplacement
+    :type  mv: QPoint
+    :param ech: l'échelle globale
+    :type ech: float
+    :return: le document avec un attribut modifié
+    :rtype: xml.dom
+    """
+    g=[e for e in doc.getElementsByTagName("g") if e.getAttribute("id")==ident]
+    m=eval(g[0].getAttribute("transform"))
+    m.e+=mv.x()
+    m.f+=mv.y()
+    g[0].setAttribute("transform", str(m))
+    return doc

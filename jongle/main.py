@@ -13,7 +13,7 @@ from copy import deepcopy
 from .Ui_main import Ui_MainWindow
 from .objetphysique import ObjetPhysique
 from .matrix import matrix
-from .opencv import videoToRgbFrameList, insertImage
+from .opencv import *
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None,
@@ -54,8 +54,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.tabWidget.setCurrentWidget(self.ui.sceneTab)
         self.currentFrame=0
         self.ui.progEdit.setPlainText(open(progfile).read())
-        self.hooks=[]
-        self.docs=[]
+        self.hooks=[] # liste de fonctions pour la simulation
+        self.docs=[]  # liste d'images SVG
+        self.trajectoires=[] # liste d'ensembles d'objets se déplaçant
         self.enregistreFonctions()
         self.frames=videoToRgbFrameList(videofile)
         self.count=len(self.frames)
@@ -63,11 +64,51 @@ class MainWindow(QtWidgets.QMainWindow):
         self.doc=insertImage(self.frames[0], self.doc)
         self.ui.svgWidget.refresh(self.doc)
 
-        self.simulated=False
+        self.simulated = False
+        self.dragging  = False
+        self.objIdents = set() # identifiants des objets sélectionnés
         # la boucle pour afficher les images
         self.timer=QtCore.QTimer()
         self.timer.timeout.connect(self.timeHook)
         self.timer.start(1000*self.delta_t)
+        return
+
+    def mouseMoveEvent(self, event):
+        if self.timer.isActive() and self.currentFrame < self.count:
+            # une animation ou simulation est en cours, pas de réponse
+            return
+        else:
+            mv=event.pos() - self.prevPos
+            doc=self.docs[self.currentFrame-1]
+            for o in self.objIdents:
+               moveGroup(doc, o.id, mv, self.ech)
+               o.m.e+=mv.x()
+               o.m.f+=mv.y()
+               o.x=o.m.e/self.ech
+               o.y=o.m.f/self.ech
+               self.setCbText(o)
+            self.ui.svgWidget.refresh(doc)
+            self.prevPos=event.pos()
+        return
+
+    def setCbText(self,op):
+        """
+        ajuste le texte d'une case à cocher
+        
+        :param op: un objet physique
+        :type  op: ObjetPhysique
+        """
+        op.cb.setText("%s (%6.2f, %6.2f)" %(op.id, op.x, op.y))
+        return
+
+    def mousePressEvent(self, event):
+        self.dragging=True
+        self.prevPos=event.pos()
+        return
+
+    def mouseReleaseEvent(self, event):
+        self.dragging=False
+        return
 
     def timeHook(self):
         """
@@ -91,7 +132,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def trouveObjetsPhysiques(self):
         """
         met à jour la liste self.objetsPhysiques avec tous les
-        elements <g> du DOM, qui ont un attribut transform="matrix(a,b,c,d,e,f)"
+        elements <g> du DOM, qui ont un attribut
+        transform="matrix(a,b,c,d,e,f)", puis crée des cases à cocher
+        pour sélectionner les objets physiques.
         """
         for g in self.doc.getElementsByTagName("g"):
             try:
@@ -102,7 +145,31 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.objetsPhysiques[ident]=o
             except:
                 pass
+        poBox=self.ui.poBox
+        layout = poBox.layout()
+        for ident,o in  self.objetsPhysiques.items():
+            b=QtWidgets.QCheckBox("%s (%6.2f, %6.2f)" %(o.id, o.x, o.y),poBox)
+            o.cb=b
+            layout.addWidget(b)
+            b.stateChanged.connect(self.selectObject(o))
         return
+
+    def selectObject(self,op):
+        """
+        Fabrique de fonction de rappel pour les cases à cocher des 
+        objets physiques, qui conserve le contexte de l'objet op
+        afin de maintenir l'ensemble self.objIdents
+        
+        :param op: un objet physique
+        :type  op: ObjetPhysique
+        """
+        def cb(state):
+            if state > 0:
+                self.objIdents.add(op)
+            else:
+                self.objIdents.remove(op)
+            return
+        return cb
 
     def startStop(self):
         """arrête/relanche le timer"""
@@ -138,6 +205,9 @@ class MainWindow(QtWidgets.QMainWindow):
                                       self.count*self.delta_t
                                   ))
             self.ui.progressBar.setValue(self.currentFrame)
+            for o in self.trajectoires[self.currentFrame-1]:
+                # met à jour les positions affichées des objets physiques
+                self.setCbText(o)
         else:
             pass
         return
@@ -149,13 +219,16 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         frame=self.frames[self.currentFrame]
         doc=minidom.parseString("<svg></svg>")
+        objSet=set()
         for i, obj in self.objetsPhysiques.items():
             for h in self.hooks:
                 h(obj)
             obj.move()
             doc.documentElement.appendChild(obj.g)
-            self.ui.label.setText("simultation, %d/%d : %s" %
-                                  (self.currentFrame, self.count, i))
+            objSet.add(obj.copy())
+        self.trajectoires.append(objSet)
+        self.ui.label.setText("simultation, %d/%d : %s" %
+                              (self.currentFrame, self.count, i))
         doc=insertImage(frame, doc)
         self.docs.append(deepcopy(doc))
         self.currentFrame+=1
@@ -177,6 +250,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.hooks=[] # efface les anciennes fonctions
         self.docs=[]  # efface les images de la précédente simulation
+        self.trajectoires=[] # idem pour les trajectoires des objets physiques
         self.simulated=False # va provoquer une nouvelle simulation
         self.currentFrame=0  # depuis le début
         funcs=functionsFrom(self.ui.progEdit.toPlainText())

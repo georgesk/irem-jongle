@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from copy import deepcopy
+
 class ObjetPhysique():
     def __init__(self, parent, ident, group, matrice, vx=0, vy=0):
         """
@@ -27,8 +29,26 @@ class ObjetPhysique():
         self.y=matrice.f/self.parent.ech
         self.vx=vx
         self.vy=vy
+        self.cb=None # pointeur vers un checkBox
         return
 
+    def copy(self):
+        """
+        revoie une copie de self, avec seulement la matrice copiées
+        en profondeur. Le reste est plus simple (ce sont des scalaires).
+        On évite de faire une copie en profondeur de self.cb, qui est
+        un QCheckBox.
+        
+        :return: une copie "économique" de self
+        :rtype: ObjetPhysique
+        """
+        result=ObjetPhysique(
+            self.parent, self.id, self.g,
+            deepcopy(self.m), self.vx, self.vy
+        )
+        result.cb=self.cb
+        return result
+    
     def __str__(self):
         return "Objet physique « {id} » : pos=({x}, {y}) vit=({vx}, {vy})".format(**self.__dict__)
 
