@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import sys, inspect, pydoc
+import sys, inspect, pydoc, os.path
 
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg
+from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo
 from xml.dom import minidom
 from collections import OrderedDict
 from copy import deepcopy
@@ -199,6 +200,17 @@ def functionsFrom(source):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
+
+    # traduction
+    lang=QLocale.system().name()
+    t=QTranslator()
+    t.load("lang/"+lang, os.path.dirname(__file__))
+    app.installTranslator(t)
+    
+    t1=QTranslator()
+    t1.load("qt_"+lang,
+            QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+    app.installTranslator(t1)
 
     w=MainWindow(svg="ballon.svg", delta_t=40e-3, ech=20,
                  videofile="videos/ffa-cropped-cut001.avi",
