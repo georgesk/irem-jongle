@@ -250,7 +250,7 @@
        </size>
       </property>
       <property name="title">
-       <string>Physical objects</string>
+       <string>Physical objects (check to move)</string>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
