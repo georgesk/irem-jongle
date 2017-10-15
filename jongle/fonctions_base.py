@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import print_function
-#####################################
 
 ### mise en place de la gravité
 def gravite(obj):

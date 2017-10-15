@@ -20,6 +20,7 @@ class MainWindow(QtWidgets.QMainWindow):
                  delta_t=None,
                  ech=None,
                  videofile=None,
+                 progfile="jongle/fonction_base.py",
     ):
         """
         le constructeur
@@ -35,6 +36,8 @@ class MainWindow(QtWidgets.QMainWindow):
         :type ech: float
         :param videofile: un fichier video, à 25 images par secondes
         :type videofile: str
+        :param progfile: un fichier Python qui contient des fonctions agissant sur un ObjetPhysique
+        :type progfile: str
         """
         QtWidgets.QMainWindow.__init__(self,parent)
         self.ui=Ui_MainWindow()
@@ -47,6 +50,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.svg=svg
         self.loadfile()
         self.ui.tabWidget.setCurrentWidget(self.ui.sceneTab)
+        self.ui.progEdit.setPlainText(open(progfile).read())
+        self.hooks=[]
+        self.enregistreFonctions()
         self.frames=videoToRgbFrameList(videofile)
         self.currentFrame=0
         self.count=len(self.frames)
@@ -54,7 +60,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.doc=insertImage(self.frames[0], self.doc)
         self.ui.svgWidget.refresh(self.doc)
 
-        self.hooks=[]
         self.docs=[]
         self.simulated=False
         # la boucle pour afficher les images
@@ -156,6 +161,20 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.label.setText(self.tr("The simulation is finished"))
         return
 
+    def enregistreFonctions(self):
+        """
+        Enregistre les fonctions écrites dans l'onglet de programme,
+        afin qu'elles soient invoquées lors de la simulation
+        
+        :return: un dictionnaire : nom de fonction -> tuple(exécutable, paramètres, aide)
+        :rtype: dict
+        """
+        funcs=functionsFrom(self.ui.progEdit.toPlainText())
+        for f in funcs:
+            self.enregistreFonction(funcs[f][0])
+        self.simulated=False # va provoquer une nouvelle simulation
+        return funcs
+
     def enregistreFonction(self, fonction):
         """
         ajoute une fonction à self.hooks
@@ -185,11 +204,8 @@ def main():
 
     w=MainWindow(svg="ballon.svg", delta_t=40e-3, ech=20,
                  videofile="videos/ffa-cropped-cut001.avi",
+                 progfile="jongle/fonctions_base.py"
     )
-
-    funcs=functionsFrom(open("jongle/fonctions_base.py").read())
-    for f in funcs:
-        w.enregistreFonction(funcs[f][0])
 
     w.show()
     sys.exit(app.exec_())

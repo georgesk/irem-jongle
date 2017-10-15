@@ -109,7 +109,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="sceneTab">
        <attribute name="title">
@@ -128,13 +128,13 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="grogTab">
+      <widget class="QWidget" name="progTab">
        <attribute name="title">
         <string>Programs</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QTextEdit" name="textEdit"/>
+         <widget class="QTextEdit" name="progEdit"/>
         </item>
         <item>
          <widget class="QFrame" name="frame_2">
