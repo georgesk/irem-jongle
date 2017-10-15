@@ -47,6 +47,19 @@ class ObjetPhysique():
         self.g.setAttribute("transform", str(self.m))
         return
 
+    @property
+    def t(self):
+        """
+        cette propriété permet d'interroger la date ; en fait celle-ci est
+        héritée du parent, et elle est liée un nuvéro de l'image en cours
+        de traitement. Comme dans la mécanique newtonnienne, le temps est
+        universel.
+
+        :return: la date en seconde
+        :rtype: float
+        """
+        return self.parent.currentFrame * self.parent.delta_t
+
     def accelere(self, ax, ay):
         """
         Applique une étape de la méthode d'Euleur, change les vitesses
