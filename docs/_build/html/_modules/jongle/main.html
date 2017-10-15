@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>jongle.main &#8212; documentation Jongle 0.1</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/translations.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Recherche" href="../../search.html" />
+    <link rel="top" title="documentation Jongle 0.1" href="../../index.html" />
+    <link rel="up" title="Code du module" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Code source de jongle.main</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">PyQt5</span> <span class="k">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtSvg</span>
+<span class="kn">from</span> <span class="nn">xml.dom</span> <span class="k">import</span> <span class="n">minidom</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">from</span> <span class="nn">.Ui_main</span> <span class="k">import</span> <span class="n">Ui_MainWindow</span>
+<span class="kn">from</span> <span class="nn">.objetphysique</span> <span class="k">import</span> <span class="n">ObjetPhysique</span>
+<span class="kn">from</span> <span class="nn">.matrix</span> <span class="k">import</span> <span class="n">matrix</span>
+<span class="kn">from</span> <span class="nn">.opencv</span> <span class="k">import</span> <span class="n">videoToRgbFrameList</span><span class="p">,</span> <span class="n">insertImage</span>
+
+<div class="viewcode-block" id="MainWindow"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow">[docs]</a><span class="k">class</span> <span class="nc">MainWindow</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMainWindow</span><span class="p">):</span>
+<div class="viewcode-block" id="MainWindow.__init__"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">svg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">delta_t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">ech</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">videofile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        le constructeur</span>
+<span class="sd">        :param parent: un parent</span>
+<span class="sd">        :type parent: QWidget</span>
+<span class="sd">        :param svg: un nom de fichier au format SVG</span>
+<span class="sd">        :type svg: str</span>
+<span class="sd">        :param delta_t: l&#39;intervalle de temps entre deux images; la fonction</span>
+<span class="sd">          de rappel self.runhooks est appelée entre deux images</span>
+<span class="sd">        :type delta_t: float</span>
+<span class="sd">        :param ech: l&#39;échelle à appliquer à l&#39;image</span>
+<span class="sd">        :type ech: float</span>
+<span class="sd">        :param videofile: un fichier video, à 25 images par secondes</span>
+<span class="sd">        :type videofile: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMainWindow</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">=</span><span class="n">Ui_MainWindow</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">setupUi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">playButton</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">startStop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">backButton</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">back</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delta_t</span><span class="o">=</span><span class="n">delta_t</span> <span class="k">if</span> <span class="n">delta_t</span> <span class="k">else</span> <span class="mf">40e-3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ech</span><span class="o">=</span><span class="n">ech</span> <span class="k">if</span> <span class="n">ech</span> <span class="k">else</span> <span class="mi">20</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">svg</span><span class="o">=</span><span class="n">svg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loadfile</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">tabWidget</span><span class="o">.</span><span class="n">setCurrentWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">sceneTab</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="o">=</span><span class="n">videoToRgbFrameList</span><span class="p">(</span><span class="n">videofile</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="o">=</span><span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">progressBar</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">=</span><span class="n">insertImage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">svgWidget</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span><span class="o">=</span><span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="o">=</span><span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulated</span><span class="o">=</span><span class="kc">False</span>
+        <span class="c1"># la boucle pour afficher les images</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">timeout</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeHook</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">1000</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindow.timeHook"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.timeHook">[docs]</a>    <span class="k">def</span> <span class="nf">timeHook</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        fonction de rappel (25 fois par seconde)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulated</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simule</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">showDoc</span><span class="p">()</span>
+        <span class="k">return</span></div>
+    
+<div class="viewcode-block" id="MainWindow.loadfile"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.loadfile">[docs]</a>    <span class="k">def</span> <span class="nf">loadfile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Récupère un fichier SVG, l&#39;analyse et l&#39;affiche.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">=</span><span class="n">minidom</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">svg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objetsPhysiques</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trouveObjetsPhysiques</span><span class="p">()</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="MainWindow.trouveObjetsPhysiques"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.trouveObjetsPhysiques">[docs]</a>    <span class="k">def</span> <span class="nf">trouveObjetsPhysiques</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        met à jour la liste self.objetsPhysiques avec tous les</span>
+<span class="sd">        elements &lt;g&gt; du DOM, qui ont un attribut transform=&quot;matrix(a,b,c,d,e,f)&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;g&quot;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">m</span><span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;transform&quot;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
+                    <span class="n">ident</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+                    <span class="n">o</span><span class="o">=</span><span class="n">ObjetPhysique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ident</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">objetsPhysiques</span><span class="p">[</span><span class="n">ident</span><span class="p">]</span><span class="o">=</span><span class="n">o</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="MainWindow.startStop"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.startStop">[docs]</a>    <span class="k">def</span> <span class="nf">startStop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;arrête/relanche le timer&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">isActive</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">playButton</span><span class="o">.</span><span class="n">setIcon</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="o">.</span><span class="n">fromTheme</span><span class="p">(</span><span class="s2">&quot;media-playback-pause-symbolic&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">playButton</span><span class="o">.</span><span class="n">setIcon</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="o">.</span><span class="n">fromTheme</span><span class="p">(</span><span class="s2">&quot;media-playback-start-symbolic&quot;</span><span class="p">))</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="MainWindow.back"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.back">[docs]</a>    <span class="k">def</span> <span class="nf">back</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        remet le compteur de frames à zéro</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulated</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">showDoc</span><span class="p">()</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="MainWindow.showDoc"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.showDoc">[docs]</a>    <span class="k">def</span> <span class="nf">showDoc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fonction rappelée par le timer, toutes les 40 millisecondes.</span>
+
+<span class="sd">        Elle provoque l&#39;affichage d&#39;une nouvelle image</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">svgWidget</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s2">&quot;video t = &quot;</span><span class="p">)</span> <span class="o">+</span>
+                                  <span class="s2">&quot;</span><span class="si">%6.3f</span><span class="s2"> s&quot;</span> <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_t</span><span class="p">,))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span> <span class="o">+=</span><span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">progressBar</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span></div>
+    
+<div class="viewcode-block" id="MainWindow.simule"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.simule">[docs]</a>    <span class="k">def</span> <span class="nf">simule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Réalise la simulation de façon non-interactive, pour len(self.frames)</span>
+<span class="sd">        images</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">frame</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="p">]</span>
+        <span class="n">doc</span><span class="o">=</span><span class="n">minidom</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span><span class="s2">&quot;&lt;svg&gt;&lt;/svg&gt;&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objetsPhysiques</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span><span class="p">:</span>
+                <span class="n">h</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">move</span><span class="p">()</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">documentElement</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">g</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;simultation, </span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2"> : </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+                                  <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+        <span class="n">doc</span><span class="o">=</span><span class="n">insertImage</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="o">+=</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">progressBar</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="o">=</span><span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulated</span><span class="o">=</span><span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s2">&quot;The simulation is finished&quot;</span><span class="p">))</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="MainWindow.enregistreFonction"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.enregistreFonction">[docs]</a>    <span class="k">def</span> <span class="nf">enregistreFonction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fonction</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ajoute une fonction à self.hooks</span>
+<span class="sd">        :param fonction: une fonction de rappel</span>
+<span class="sd">        :type fonction: une fonction qui a un seul argument, de type </span>
+<span class="sd">        ObjetPhysique.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fonction</span><span class="p">)</span>
+        <span class="k">return</span></div></div>
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../jongle.html#jongle.main.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+
+    <span class="n">w</span><span class="o">=</span><span class="n">MainWindow</span><span class="p">(</span><span class="n">svg</span><span class="o">=</span><span class="s2">&quot;ballon.svg&quot;</span><span class="p">,</span> <span class="n">delta_t</span><span class="o">=</span><span class="mf">40e-3</span><span class="p">,</span> <span class="n">ech</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+                 <span class="n">videofile</span><span class="o">=</span><span class="s2">&quot;videos/ffa-cropped-cut001.avi&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1">### mise en place de la gravité</span>
+    <span class="k">def</span> <span class="nf">fonction</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">accelere</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">9.8</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">enregistreFonction</span><span class="p">(</span><span class="n">fonction</span><span class="p">)</span>
+
+
+    <span class="c1">### mise en place du rebond</span>
+    <span class="k">def</span> <span class="nf">rebond</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">y</span> <span class="o">&gt;</span> <span class="mi">50</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">vy</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">vy</span> <span class="o">=</span> <span class="o">-</span><span class="n">obj</span><span class="o">.</span><span class="n">vy</span>
+        <span class="k">return</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">enregistreFonction</span><span class="p">(</span><span class="n">rebond</span><span class="p">)</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">())</span>
+    <span class="k">return</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Code du module</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Georges Khaznadar.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
