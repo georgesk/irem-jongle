@@ -44,23 +44,24 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.ui.playButton.clicked.connect(self.startStop)
         self.ui.backButton.clicked.connect(self.back)
+        self.ui.simulButton.clicked.connect(self.enregistreFonctions)
         self.delta_t=delta_t if delta_t else 40e-3
         self.ech=ech if ech else 20
         self.doc=None
         self.svg=svg
         self.loadfile()
         self.ui.tabWidget.setCurrentWidget(self.ui.sceneTab)
+        self.currentFrame=0
         self.ui.progEdit.setPlainText(open(progfile).read())
         self.hooks=[]
+        self.docs=[]
         self.enregistreFonctions()
         self.frames=videoToRgbFrameList(videofile)
-        self.currentFrame=0
         self.count=len(self.frames)
         self.ui.progressBar.setRange(0,self.count)
         self.doc=insertImage(self.frames[0], self.doc)
         self.ui.svgWidget.refresh(self.doc)
 
-        self.docs=[]
         self.simulated=False
         # la boucle pour afficher les images
         self.timer=QtCore.QTimer()
@@ -164,26 +165,20 @@ class MainWindow(QtWidgets.QMainWindow):
     def enregistreFonctions(self):
         """
         Enregistre les fonctions écrites dans l'onglet de programme,
-        afin qu'elles soient invoquées lors de la simulation
+        afin qu'elles soient invoquées lors de la simulation. Les anciennes
+        fonctions enregistrées sont effacées.
         
         :return: un dictionnaire : nom de fonction -> tuple(exécutable, paramètres, aide)
         :rtype: dict
         """
+        self.hooks=[] # efface les anciennes fonctions
+        self.docs=[]  # efface les images de la précédente simulation
+        self.simulated=False # va provoquer une nouvelle simulation
+        self.currentFrame=0  # depuis le début
         funcs=functionsFrom(self.ui.progEdit.toPlainText())
         for f in funcs:
-            self.enregistreFonction(funcs[f][0])
-        self.simulated=False # va provoquer une nouvelle simulation
+            self.hooks.append(funcs[f][0])
         return funcs
-
-    def enregistreFonction(self, fonction):
-        """
-        ajoute une fonction à self.hooks
-        :param fonction: une fonction de rappel
-        :type fonction: une fonction qui a un seul argument, de type 
-        ObjetPhysique.
-        """
-        self.hooks.append(fonction)
-        return
 
 def functionsFrom(source):
     """
