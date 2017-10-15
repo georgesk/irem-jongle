@@ -66,7 +66,7 @@
 <span class="kn">from</span> <span class="nn">.Ui_main</span> <span class="k">import</span> <span class="n">Ui_MainWindow</span>
 <span class="kn">from</span> <span class="nn">.objetphysique</span> <span class="k">import</span> <span class="n">ObjetPhysique</span>
 <span class="kn">from</span> <span class="nn">.matrix</span> <span class="k">import</span> <span class="n">matrix</span>
-<span class="kn">from</span> <span class="nn">.opencv</span> <span class="k">import</span> <span class="n">videoToRgbFrameList</span><span class="p">,</span> <span class="n">insertImage</span>
+<span class="kn">from</span> <span class="nn">.opencv</span> <span class="k">import</span> <span class="o">*</span>
 
 <div class="viewcode-block" id="MainWindow"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow">[docs]</a><span class="k">class</span> <span class="nc">MainWindow</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMainWindow</span><span class="p">):</span>
 <div class="viewcode-block" id="MainWindow.__init__"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -107,8 +107,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">tabWidget</span><span class="o">.</span><span class="n">setCurrentWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">sceneTab</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="o">=</span><span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">progEdit</span><span class="o">.</span><span class="n">setPlainText</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">progfile</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span><span class="o">=</span><span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="o">=</span><span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span><span class="o">=</span><span class="p">[]</span> <span class="c1"># liste de fonctions pour la simulation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="o">=</span><span class="p">[]</span>  <span class="c1"># liste d&#39;images SVG</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trajectoires</span><span class="o">=</span><span class="p">[]</span> <span class="c1"># liste d&#39;ensembles d&#39;objets se déplaçant</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">enregistreFonctions</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="o">=</span><span class="n">videoToRgbFrameList</span><span class="p">(</span><span class="n">videofile</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">)</span>
@@ -116,11 +117,51 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">=</span><span class="n">insertImage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">svgWidget</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">simulated</span><span class="o">=</span><span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulated</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span>  <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objIdents</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span> <span class="c1"># identifiants des objets sélectionnés</span>
         <span class="c1"># la boucle pour afficher les images</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">timeout</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeHook</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">1000</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_t</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">1000</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_t</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="MainWindow.mouseMoveEvent"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.mouseMoveEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mouseMoveEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">isActive</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">:</span>
+            <span class="c1"># une animation ou simulation est en cours, pas de réponse</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mv</span><span class="o">=</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">prevPos</span>
+            <span class="n">doc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objIdents</span><span class="p">:</span>
+               <span class="n">moveGroup</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">mv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ech</span><span class="p">)</span>
+               <span class="n">o</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">e</span><span class="o">+=</span><span class="n">mv</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+               <span class="n">o</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">f</span><span class="o">+=</span><span class="n">mv</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+               <span class="n">o</span><span class="o">.</span><span class="n">x</span><span class="o">=</span><span class="n">o</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">e</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">ech</span>
+               <span class="n">o</span><span class="o">.</span><span class="n">y</span><span class="o">=</span><span class="n">o</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">f</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">ech</span>
+               <span class="bp">self</span><span class="o">.</span><span class="n">setCbText</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">svgWidget</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prevPos</span><span class="o">=</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="MainWindow.setCbText"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.setCbText">[docs]</a>    <span class="k">def</span> <span class="nf">setCbText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">op</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ajuste le texte d&#39;une case à cocher</span>
+<span class="sd">        </span>
+<span class="sd">        :param op: un objet physique</span>
+<span class="sd">        :type  op: ObjetPhysique</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">op</span><span class="o">.</span><span class="n">cb</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%6.2f</span><span class="s2">, </span><span class="si">%6.2f</span><span class="s2">)&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="MainWindow.mousePressEvent"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.mousePressEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mousePressEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span><span class="o">=</span><span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prevPos</span><span class="o">=</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="MainWindow.mouseReleaseEvent"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.mouseReleaseEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mouseReleaseEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span><span class="o">=</span><span class="kc">False</span>
+        <span class="k">return</span></div>
 
 <div class="viewcode-block" id="MainWindow.timeHook"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.timeHook">[docs]</a>    <span class="k">def</span> <span class="nf">timeHook</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -144,7 +185,9 @@
 <div class="viewcode-block" id="MainWindow.trouveObjetsPhysiques"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.trouveObjetsPhysiques">[docs]</a>    <span class="k">def</span> <span class="nf">trouveObjetsPhysiques</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        met à jour la liste self.objetsPhysiques avec tous les</span>
-<span class="sd">        elements &lt;g&gt; du DOM, qui ont un attribut transform=&quot;matrix(a,b,c,d,e,f)&quot;</span>
+<span class="sd">        elements &lt;g&gt; du DOM, qui ont un attribut</span>
+<span class="sd">        transform=&quot;matrix(a,b,c,d,e,f)&quot;, puis crée des cases à cocher</span>
+<span class="sd">        pour sélectionner les objets physiques.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;g&quot;</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
@@ -155,7 +198,31 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">objetsPhysiques</span><span class="p">[</span><span class="n">ident</span><span class="p">]</span><span class="o">=</span><span class="n">o</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="k">pass</span>
+        <span class="n">poBox</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">poBox</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">poBox</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">ident</span><span class="p">,</span><span class="n">o</span> <span class="ow">in</span>  <span class="bp">self</span><span class="o">.</span><span class="n">objetsPhysiques</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">b</span><span class="o">=</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QCheckBox</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%6.2f</span><span class="s2">, </span><span class="si">%6.2f</span><span class="s2">)&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">y</span><span class="p">),</span><span class="n">poBox</span><span class="p">)</span>
+            <span class="n">o</span><span class="o">.</span><span class="n">cb</span><span class="o">=</span><span class="n">b</span>
+            <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">stateChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selectObject</span><span class="p">(</span><span class="n">o</span><span class="p">))</span>
         <span class="k">return</span></div>
+
+<div class="viewcode-block" id="MainWindow.selectObject"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.selectObject">[docs]</a>    <span class="k">def</span> <span class="nf">selectObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">op</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fabrique de fonction de rappel pour les cases à cocher des </span>
+<span class="sd">        objets physiques, qui conserve le contexte de l&#39;objet op</span>
+<span class="sd">        afin de maintenir l&#39;ensemble self.objIdents</span>
+<span class="sd">        </span>
+<span class="sd">        :param op: un objet physique</span>
+<span class="sd">        :type  op: ObjetPhysique</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">cb</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">state</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">objIdents</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">objIdents</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">return</span> <span class="n">cb</span></div>
 
 <div class="viewcode-block" id="MainWindow.startStop"><a class="viewcode-back" href="../../jongle.html#jongle.main.MainWindow.startStop">[docs]</a>    <span class="k">def</span> <span class="nf">startStop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;arrête/relanche le timer&quot;&quot;&quot;</span>
@@ -191,6 +258,9 @@
                                       <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_t</span>
                                   <span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">progressBar</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectoires</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="c1"># met à jour les positions affichées des objets physiques</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setCbText</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">return</span></div>
@@ -202,13 +272,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">frame</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="p">]</span>
         <span class="n">doc</span><span class="o">=</span><span class="n">minidom</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span><span class="s2">&quot;&lt;svg&gt;&lt;/svg&gt;&quot;</span><span class="p">)</span>
+        <span class="n">objSet</span><span class="o">=</span><span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objetsPhysiques</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span><span class="p">:</span>
                 <span class="n">h</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">move</span><span class="p">()</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">documentElement</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">g</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;simultation, </span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2"> : </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
-                                  <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+            <span class="n">objSet</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trajectoires</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">objSet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;simultation, </span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2"> : </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+                              <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
         <span class="n">doc</span><span class="o">=</span><span class="n">insertImage</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="o">+=</span><span class="mi">1</span>
@@ -230,6 +303,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span><span class="o">=</span><span class="p">[]</span> <span class="c1"># efface les anciennes fonctions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="o">=</span><span class="p">[]</span>  <span class="c1"># efface les images de la précédente simulation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trajectoires</span><span class="o">=</span><span class="p">[]</span> <span class="c1"># idem pour les trajectoires des objets physiques</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">simulated</span><span class="o">=</span><span class="kc">False</span> <span class="c1"># va provoquer une nouvelle simulation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">currentFrame</span><span class="o">=</span><span class="mi">0</span>  <span class="c1"># depuis le début</span>
         <span class="n">funcs</span><span class="o">=</span><span class="n">functionsFrom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">progEdit</span><span class="o">.</span><span class="n">toPlainText</span><span class="p">())</span>

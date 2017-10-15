@@ -116,6 +116,51 @@ fonctions enregistrées sont effacées.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="jongle.main.MainWindow.mouseMoveEvent">
+<code class="descname">mouseMoveEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/main.html#MainWindow.mouseMoveEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.main.MainWindow.mouseMoveEvent" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="jongle.main.MainWindow.mousePressEvent">
+<code class="descname">mousePressEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/main.html#MainWindow.mousePressEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.main.MainWindow.mousePressEvent" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="jongle.main.MainWindow.mouseReleaseEvent">
+<code class="descname">mouseReleaseEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/main.html#MainWindow.mouseReleaseEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.main.MainWindow.mouseReleaseEvent" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="jongle.main.MainWindow.selectObject">
+<code class="descname">selectObject</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/main.html#MainWindow.selectObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.main.MainWindow.selectObject" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fabrique de fonction de rappel pour les cases à cocher des 
+objets physiques, qui conserve le contexte de l&#8217;objet op
+afin de maintenir l&#8217;ensemble self.objIdents</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><strong>op</strong> (<a class="reference internal" href="#jongle.objetphysique.ObjetPhysique" title="jongle.objetphysique.ObjetPhysique"><em>ObjetPhysique</em></a>) &#8211; un objet physique</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jongle.main.MainWindow.setCbText">
+<code class="descname">setCbText</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/main.html#MainWindow.setCbText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.main.MainWindow.setCbText" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>ajuste le texte d&#8217;une case à cocher</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><strong>op</strong> (<a class="reference internal" href="#jongle.objetphysique.ObjetPhysique" title="jongle.objetphysique.ObjetPhysique"><em>ObjetPhysique</em></a>) &#8211; un objet physique</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="jongle.main.MainWindow.showDoc">
 <code class="descname">showDoc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/main.html#MainWindow.showDoc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.main.MainWindow.showDoc" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Fonction rappelée par le timer, toutes les 40 millisecondes.</p>
@@ -145,7 +190,9 @@ images</p>
 <dt id="jongle.main.MainWindow.trouveObjetsPhysiques">
 <code class="descname">trouveObjetsPhysiques</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/main.html#MainWindow.trouveObjetsPhysiques"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.main.MainWindow.trouveObjetsPhysiques" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>met à jour la liste self.objetsPhysiques avec tous les
-elements &lt;g&gt; du DOM, qui ont un attribut transform=&#8221;matrix(a,b,c,d,e,f)&#8221;</p>
+elements &lt;g&gt; du DOM, qui ont un attribut
+transform=&#8221;matrix(a,b,c,d,e,f)&#8221;, puis crée des cases à cocher
+pour sélectionner les objets physiques.</p>
 </dd></dl>
 
 </dd></dl>
@@ -281,6 +328,25 @@ une durée delta_t.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="jongle.objetphysique.ObjetPhysique.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/objetphysique.html#ObjetPhysique.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.objetphysique.ObjetPhysique.copy" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>revoie une copie de self, avec seulement la matrice copiées
+en profondeur. Le reste est plus simple (ce sont des scalaires).
+On évite de faire une copie en profondeur de self.cb, qui est
+un QCheckBox.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Retourne:</th><td class="field-body">une copie &#8220;économique&#8221; de self</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type retourné:</th><td class="field-body"><a class="reference internal" href="#jongle.objetphysique.ObjetPhysique" title="jongle.objetphysique.ObjetPhysique">ObjetPhysique</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="jongle.objetphysique.ObjetPhysique.move">
 <code class="descname">move</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/objetphysique.html#ObjetPhysique.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.objetphysique.ObjetPhysique.move" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Applique une étape de la méthode d&#8217;Euleur, change les coordonnées
@@ -330,6 +396,33 @@ un document SVG.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Retourne:</th><td class="field-body"><p class="first">le document modifié par insertion de l&#8217;image</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Type retourné:</th><td class="field-body"><p class="first last">xml.dom</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="jongle.opencv.moveGroup">
+<code class="descclassname">jongle.opencv.</code><code class="descname">moveGroup</code><span class="sig-paren">(</span><em>doc</em>, <em>ident</em>, <em>mv</em>, <em>ech</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/opencv.html#moveGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.opencv.moveGroup" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Déplace un groupe avec une transformation par matrice au sein
+d&#8217;une image SVG.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><ul class="first simple">
+<li><strong>doc</strong> (<em>xml.dom</em>) &#8211; un document SVG</li>
+<li><strong>ident</strong> (<em>str</em>) &#8211; un identifiant</li>
+<li><strong>mv</strong> (<em>QPoint</em>) &#8211; un déplacement</li>
+<li><strong>ech</strong> (<em>float</em>) &#8211; l&#8217;échelle globale</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Retourne:</th><td class="field-body"><p class="first">le document avec un attribut modifié</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Type retourné:</th><td class="field-body"><p class="first last">xml.dom</p>
