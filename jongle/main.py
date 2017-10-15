@@ -9,12 +9,10 @@ from xml.dom import minidom
 from collections import OrderedDict
 from copy import deepcopy
 
-import cv2
-
 from .Ui_main import Ui_MainWindow
 from .objetphysique import ObjetPhysique
 from .matrix import matrix
-from .svgwidget import insertImage
+from .opencv import videoToRgbFrameList, insertImage
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None,
@@ -48,14 +46,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.svg=svg
         self.loadfile()
         self.ui.tabWidget.setCurrentWidget(self.ui.sceneTab)
-        self.frames=[]
+        self.frames=videoToRgbFrameList(videofile)
         self.currentFrame=0
-        self.cap=cv2.VideoCapture(videofile)
-        ok=True
-        while ok:
-            ok, frame = self.cap.read()
-            if ok:
-                self.frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         self.count=len(self.frames)
         self.ui.progressBar.setRange(0,self.count)
         self.doc=insertImage(self.frames[0], self.doc)
