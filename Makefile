@@ -1,22 +1,20 @@
 DESTDIR =
-UI_SOURCES = $(shell ls *.ui)
-UI_PYFILES = $(patsubst %.ui, Ui_%.py, $(UI_SOURCES))
-PYUIC = pyuic5
 
-SUBDIRS = lang
+SUBDIRS = jongle
 
 .PHONY: all
-all: $(UI_PYFILES)
+all:
 	for d in $(SUBDIRS); do make -C $$d $@; done
 
 .PHONY: clean
 clean:
-	rm -f $(UI_PYFILES)
+	rm -f *~
 	for d in $(SUBDIRS); do make -C $$d $@; done
 
 .PHONY: install
 install:
 	for d in $(SUBDIRS); do make -C $$d $@; done
 
-Ui_%.py: %.ui
-	$(PYUIC) -o $@ $<
+.PHONY: html
+html:
+	make -C docs html
