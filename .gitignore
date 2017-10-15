@@ -58,3 +58,6 @@ doc
 
 # user interfaces
 Ui_*.py
+
+# language compiled files
+*.qm
