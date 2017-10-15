@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import sys, Image, io, base64
+import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg
 from xml.dom import minidom
@@ -10,11 +10,11 @@ from collections import OrderedDict
 from copy import deepcopy
 
 import cv2
-import numpy as np
 
 from .Ui_main import Ui_MainWindow
 from .objetphysique import ObjetPhysique
 from .matrix import matrix
+from .svgwidget import insertImage
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None,
@@ -58,7 +58,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         self.count=len(self.frames)
         self.ui.progressBar.setRange(0,self.count)
-        self.insertImage(self.frames[0], self.doc)
+        self.doc=insertImage(self.frames[0], self.doc)
         self.ui.svgWidget.refresh(self.doc)
 
         self.hooks=[]
@@ -153,7 +153,7 @@ class MainWindow(QtWidgets.QMainWindow):
             doc.documentElement.appendChild(obj.g)
             self.ui.label.setText("simultation, %d/%d : %s" %
                                   (self.currentFrame, self.count, i))
-        self.insertImage(frame, doc)
+        doc=insertImage(frame, doc)
         self.docs.append(deepcopy(doc))
         self.currentFrame+=1
         self.ui.progressBar.setValue(self.currentFrame)
@@ -172,38 +172,6 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.hooks.append(fonction)
         return
-
-    def insertImage(self, frame, doc):
-        """
-        insère une image juste devant le fond (de type rect)
-        ou remplace l'image qui est juste devant le fond
-        :param frame: une image issue d'un cv2.VideoCapture ... read()
-        :type frame: numpy Array
-        :param doc: a SVG document
-        :type doc: xml.dom
-        """
-        if doc==None:
-            doc=self.doc
-        im = Image.fromarray(frame)
-        out = io.BytesIO()
-        im.save(out, format='PNG')
-        b64=base64.b64encode(out.getvalue())
-        href="data:image/png;base64,"+b64
-        premierObjet=doc.getElementsByTagName("g")[0]
-        images=doc.getElementsByTagName("image")
-        if not images:
-            image=doc.createElement("image")
-            image.setAttribute("x","0")
-            image.setAttribute("y","0")
-            image.setAttribute("width","%d" %im.width)
-            image.setAttribute("height","%d" %im.height)
-            image.setAttribute("preserveAspectRatio","none")
-            image.setAttribute("xlink:href",href)
-            doc.documentElement.insertBefore(image, premierObjet)
-        else:
-            images[0].setAttribute("xlink:href",href)
-        return
-            
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
