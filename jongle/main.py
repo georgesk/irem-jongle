@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import sys
+import sys, inspect, pydoc
 
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg
 from xml.dom import minidom
@@ -166,6 +166,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.hooks.append(fonction)
         return
 
+def functionsFrom(source):
+    """
+    Compile une source en langage Python
+
+    :param source: la source du programme
+    :type  source: str
+    :return: un dictionnaire : nom de fonction -> (code compilé, spécification d'arguments, aide sur la fonction)
+    :rtype: dict
+    """
+    d={}
+    c=compile(source,"","exec")
+    exec(c,d)
+    return {f: (d[f], inspect.getargspec(d[f]), pydoc.render_doc(d[f], "aide sur %s")) for f in d if callable(d[f])}
+
 def main():
     app = QtWidgets.QApplication(sys.argv)
 
@@ -173,19 +187,10 @@ def main():
                  videofile="videos/ffa-cropped-cut001.avi",
     )
 
-    ### mise en place de la gravité
-    def fonction(obj):
-        obj.accelere(0,9.8)
-        return
-    w.enregistreFonction(fonction)
+    funcs=functionsFrom(open("jongle/fonctions_base.py").read())
+    for f in funcs:
+        w.enregistreFonction(funcs[f][0])
 
-
-    ### mise en place du rebond
-    def rebond(obj):
-        if obj.y > 50 and obj.vy > 0:
-            obj.vy = -obj.vy
-        return
-    w.enregistreFonction(rebond)
     w.show()
     sys.exit(app.exec_())
     return
