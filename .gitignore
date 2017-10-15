@@ -61,3 +61,4 @@ Ui_*.py
 
 # language compiled files
 *.qm
+jongle.pro
