@@ -14,6 +14,8 @@ from .Ui_main import Ui_MainWindow
 from .objetphysique import ObjetPhysique
 from .matrix import matrix
 from .opencv import *
+from .pythonSyntax import PythonHighlighter
+
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None,
@@ -43,6 +45,7 @@ class MainWindow(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self,parent)
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
+        self.highlight = PythonHighlighter(self.ui.progEdit.document())
         self.ui.playButton.clicked.connect(self.startStop)
         self.ui.backButton.clicked.connect(self.back)
         self.ui.simulButton.clicked.connect(self.enregistreFonctions)
