@@ -25,6 +25,61 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
+        <widget class="QToolButton" name="backButton">
+         <property name="minimumSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Rerun from beginning [Home]</string>
+         </property>
+         <property name="statusTip">
+          <string>Rerun from beginning [Home]</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset theme="media-skip-backward-symbolic">
+           <normaloff>.</normaloff>.</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="shortcut">
+          <string>Home</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="minusButton">
+         <property name="toolTip">
+          <string>One image back</string>
+         </property>
+         <property name="statusTip">
+          <string>One image back</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset theme="media-seek-backward-symbolic">
+           <normaloff>.</normaloff>.</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QToolButton" name="playButton">
          <property name="minimumSize">
           <size>
@@ -57,24 +112,18 @@
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="backButton">
-         <property name="minimumSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
+        <widget class="QToolButton" name="plusButton">
          <property name="toolTip">
-          <string>Rerun from beginning [Home]</string>
+          <string>One image forward</string>
          </property>
          <property name="statusTip">
-          <string>Rerun from beginning [Home]</string>
+          <string>One image forward</string>
          </property>
          <property name="text">
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="media-skip-backward-symbolic">
+          <iconset theme="media-seek-forward-symbolic">
            <normaloff>.</normaloff>.</iconset>
          </property>
          <property name="iconSize">
@@ -82,9 +131,6 @@
            <width>32</width>
            <height>32</height>
           </size>
-         </property>
-         <property name="shortcut">
-          <string>Home</string>
          </property>
         </widget>
        </item>

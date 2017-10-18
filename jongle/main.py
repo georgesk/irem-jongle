@@ -45,10 +45,8 @@ class MainWindow(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self,parent)
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
+        self.connectUi()
         self.highlight = PythonHighlighter(self.ui.progEdit.document())
-        self.ui.playButton.clicked.connect(self.startStop)
-        self.ui.backButton.clicked.connect(self.back)
-        self.ui.simulButton.clicked.connect(self.enregistreFonctions)
         self.delta_t=delta_t if delta_t else 40e-3
         self.ech=ech if ech else 20
         self.doc=None
@@ -76,11 +74,50 @@ class MainWindow(QtWidgets.QMainWindow):
         self.timer.start(1000*self.delta_t)
         return
 
+    def connectUi(self):
+        """
+        connecte les évènements de l'interface utilisateur avec
+        les fonctions de rappel.
+        """
+        self.ui.playButton.clicked.connect(self.startStop)
+        self.ui.backButton.clicked.connect(self.back)
+        self.ui.simulButton.clicked.connect(self.enregistreFonctions)
+        self.ui.minusButton.clicked.connect(self.oneBack)
+        self.ui.plusButton.clicked.connect(self.oneForward)
+        return
+
+    def oneBack(self):
+        """
+        fonction de rappel pour revenir en arrière d'une image
+        """
+        if self.simulated:
+            if self.currentFrame > 0:
+                self.currentFrame -=1
+                self.ui.svgWidget.refresh(self.docs[self.currentFrame])
+                self.animProgress()
+        return
+
+    def oneForward(self):
+        """
+        fonction de rappel pour avancer d'une image
+        """
+        if self.simulated:
+            if self.currentFrame < self.count-1:
+                self.currentFrame +=1
+                self.ui.svgWidget.refresh(self.docs[self.currentFrame])
+                self.animProgress()
+        return
+
+        
     def mouseMoveEvent(self, event):
-        if self.timer.isActive() and self.currentFrame < self.count:
-            # une animation ou simulation est en cours, pas de réponse
-            return
-        else:
+        """
+        traite le mouvement de la souris quand un bouton est pressé.
+        Les objets qui ont été cochés dans le cadre du bas se déplacent
+        en même temps qu'on bouge la souris.
+        """
+        if not self.timer.isActive() or self.currentFrame >= self.count:
+            # pas d'animation en cours, on peut bouger les objets
+            if not self.dragging: return # cette ligne est redondante
             mv=event.pos() - self.prevPos
             doc=self.docs[self.currentFrame-1]
             for o in self.objIdents:
@@ -105,17 +142,27 @@ class MainWindow(QtWidgets.QMainWindow):
         return
 
     def mousePressEvent(self, event):
+        """
+        Traite l'évènement de bouton de souris pressé. Débute le « tirer »
+        en enregistrant la position courante
+        """
         self.dragging=True
         self.prevPos=event.pos()
         return
 
     def mouseReleaseEvent(self, event):
+        """
+        Traite l'évènement de bouton de souris relâché. Fin du « tirer ».
+        """
         self.dragging=False
         return
 
     def timeHook(self):
         """
-        fonction de rappel (25 fois par seconde)
+        fonction de rappel (25 fois par seconde). Selon fait le choix entre
+        faire avancer les calculs de simulation, et monter l'animation 
+        (quand la simulation est terminée, on dispose de toutes les images
+        de l'animation, prêtes à servir.
         """
         if not self.simulated:
             self.simule()
@@ -193,6 +240,19 @@ class MainWindow(QtWidgets.QMainWindow):
             self.showDoc()
         return
 
+    def animProgress(self):
+        """
+        Montre dans la barre de progression et sous celle-ci où en est le
+        temps de la vidéo.
+        """
+        self.ui.label.setText(self.tr("video t = ") +
+                              "%6.3f / %6.3f s" % (
+                                  self.currentFrame*self.delta_t,
+                                  self.count*self.delta_t
+                              ))
+        self.ui.progressBar.setValue(self.currentFrame)
+        return
+
     def showDoc(self):
         """
         Fonction rappelée par le timer, toutes les 40 millisecondes.
@@ -202,12 +262,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.currentFrame < self.count:
             self.ui.svgWidget.refresh(self.docs[self.currentFrame])
             self.currentFrame +=1
-            self.ui.label.setText(self.tr("video t = ") +
-                                  "%6.3f / %6.3f s" % (
-                                      self.currentFrame*self.delta_t,
-                                      self.count*self.delta_t
-                                  ))
-            self.ui.progressBar.setValue(self.currentFrame)
+            self.animProgress()
             for o in self.trajectoires[self.currentFrame-1]:
                 # met à jour les positions affichées des objets physiques
                 self.setCbText(o)

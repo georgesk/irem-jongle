@@ -4,149 +4,159 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../Ui_main.py" line="177"/>
+        <location filename="../Ui_main.py" line="191"/>
         <source>MainWindow</source>
         <translation>Fenêtre principale</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="179"/>
+        <location filename="../Ui_main.py" line="198"/>
         <source>Start/Stop [Space bar]</source>
         <translation>Démarrage/arrêt [Barre d&apos;espace]</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="180"/>
+        <location filename="../Ui_main.py" line="199"/>
         <source>Space</source>
         <translation>Space</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="182"/>
+        <location filename="../Ui_main.py" line="193"/>
         <source>Rerun from beginning [Home]</source>
         <translation>Relancer depuis le début [Début]</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="183"/>
+        <location filename="../Ui_main.py" line="194"/>
         <source>Home</source>
         <translation>Home</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="185"/>
+        <location filename="../Ui_main.py" line="203"/>
         <source>Launch simulation with the programs [F9]</source>
         <translation>Lancer la simulation avec les programmes [F9]</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="186"/>
+        <location filename="../Ui_main.py" line="204"/>
         <source>F9</source>
         <translation>F9</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="187"/>
+        <location filename="../Ui_main.py" line="205"/>
         <source>Operation</source>
         <translation>Opération</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="188"/>
+        <location filename="../Ui_main.py" line="206"/>
         <source>Simulated scene</source>
         <translation>Scène simulée</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="189"/>
+        <location filename="../Ui_main.py" line="207"/>
         <source>Save &amp;As</source>
         <translation>Enregistrer so&amp;us</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="207"/>
+        <location filename="../Ui_main.py" line="225"/>
         <source>Check Synta&amp;x</source>
         <translation>Vérifier la synta&amp;xe</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="191"/>
+        <location filename="../Ui_main.py" line="209"/>
         <source>Programs</source>
         <translation>Programmes</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="193"/>
+        <location filename="../Ui_main.py" line="211"/>
         <source>Fi&amp;le</source>
         <translation>&amp;Fichier</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="194"/>
+        <location filename="../Ui_main.py" line="212"/>
         <source>&amp;Help</source>
         <translation>&amp;Aide</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="195"/>
+        <location filename="../Ui_main.py" line="213"/>
         <source>P&amp;rograms</source>
         <translation>&amp;Programmes</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="196"/>
+        <location filename="../Ui_main.py" line="214"/>
         <source>&amp;Open Scene ...</source>
         <translation>&amp;Ouvrir une scène ...</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="197"/>
+        <location filename="../Ui_main.py" line="215"/>
         <source>&amp;New Scene</source>
         <translation>&amp;Nouvelle scène</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="198"/>
+        <location filename="../Ui_main.py" line="216"/>
         <source>Import S&amp;VG ...</source>
         <translation>Importer S&amp;VG ...</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="199"/>
+        <location filename="../Ui_main.py" line="217"/>
         <source>&amp;Initial velocities</source>
         <translation>Vitesses &amp;initiales</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="200"/>
+        <location filename="../Ui_main.py" line="218"/>
         <source>S&amp;cale</source>
         <translation>É&amp;chelle</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="201"/>
+        <location filename="../Ui_main.py" line="219"/>
         <source>&amp;G ...</source>
         <translation>&amp;G ...</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="202"/>
+        <location filename="../Ui_main.py" line="220"/>
         <source>&amp;About ...</source>
         <translation>&amp;A propos ...</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="203"/>
+        <location filename="../Ui_main.py" line="221"/>
         <source>&amp;Help (F1)</source>
         <translation>&amp;Aide (F1)</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="204"/>
+        <location filename="../Ui_main.py" line="222"/>
         <source>&amp;Quit (Ctrl-Q)</source>
         <translation>&amp;Quitter (Ctrl-Q)</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="205"/>
+        <location filename="../Ui_main.py" line="223"/>
         <source>&amp;Save standalone</source>
         <translation>Enregi&amp;strer tout seul</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="206"/>
+        <location filename="../Ui_main.py" line="224"/>
         <source>&amp;Open</source>
         <translation>&amp;Ouvrir</translation>
     </message>
     <message>
-        <location filename="../main.py" line="202"/>
+        <location filename="../main.py" line="205"/>
         <source>video t = </source>
         <translation>vidéo t= </translation>
     </message>
     <message>
-        <location filename="../main.py" line="239"/>
+        <location filename="../main.py" line="242"/>
         <source>The simulation is finished</source>
         <translation>La simulation est finie</translation>
     </message>
     <message>
-        <location filename="../Ui_main.py" line="192"/>
+        <location filename="../Ui_main.py" line="210"/>
         <source>Physical objects (check to move)</source>
         <translation>Objets physiques (cocher pour déplacer)</translation>
+    </message>
+    <message>
+        <location filename="../Ui_main.py" line="196"/>
+        <source>One image back</source>
+        <translation>Une image plus tôt</translation>
+    </message>
+    <message>
+        <location filename="../Ui_main.py" line="201"/>
+        <source>One image forward</source>
+        <translation>UNe image plus tard</translation>
     </message>
 </context>
 </TS>
