@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import sys, inspect, pydoc, os.path, cv2
+import sys, inspect, pydoc, os.path, cv2, io
 
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg
 from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo, QSize
@@ -50,6 +50,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ech=ech if ech else 20
         self.doc=None
         self.svg=svg
+        self.progFileName=None
         self.loadfile()
         self.ui.tabWidget.setCurrentWidget(self.ui.sceneTab)
         self.currentFrame=0
@@ -86,8 +87,72 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.simulButton.clicked.connect(self.enregistreFonctions)
         self.ui.minusButton.clicked.connect(self.oneBack)
         self.ui.plusButton.clicked.connect(self.oneForward)
+        self.ui.saveAsButton.clicked.connect(self.saveAs)
+        self.ui.compileButton.clicked.connect(self.tryCompile)
+        self.ui.actionSave_standalone.triggered.connect(self.save)
+        self.ui.actionOpen.triggered.connect(self.openFile)
+        self.ui.actionCheck_Synta_x.triggered.connect(self.tryCompile)
         return
 
+    def saveAs(self):
+        if self.timer.isActive():
+            self.startStop()
+        self.back() # remise à zéro
+        if not self.progFileName:
+            defaultDir=""
+        else:
+            defaultDir=os.path.dirname(self.progFileName)
+        self.progFileName, ok=QtWidgets.QFileDialog.getSaveFileName(
+            self,self.tr("File to save the programs"), defaultDir, "*.py"
+        )
+        if ok:
+            if not self.progFileName.endswith(".py"):
+                self.progFileName+=".py"
+                self.nameTabProg()
+                return self.save()
+            else:
+                return None
+
+    def nameTabProg(self):
+        """
+        Met à jour le nom de l'onglet des programmes
+        """
+        self.ui.tabWidget.setTabText(
+            self.ui.tabWidget.indexOf(self.ui.progTab),
+            self.tr("Programs ({p})").format(p=os.path.basename(
+                self.progFileName
+            ))
+        )
+        return
+
+    def save(self):
+        if self.timer.isActive():
+            self.startStop()
+        self.back() # remise à zéro
+        if not self.progFileName:
+            return self.saveAs()
+        with io.open(self.progFileName, mode="w", encoding="utf-8") as out:
+            out.write(self.ui.progEdit.toPlainText())
+        return
+        
+    def openFile(self):
+        if self.timer.isActive():
+            self.startStop()
+        self.back() # remise à zéro
+        if not self.progFileName:
+            defaultDir=""
+        else:
+            defaultDir=os.path.dirname(self.progFileName)
+        self.progFileName, ok=QtWidgets.QFileDialog.getOpenFileName(
+            self, self.tr("Open a file"), defaultDir, "*.py"
+        )
+        if ok:
+            self.ui.progEdit.setPlainText(io.open(
+                self.progFileName, encoding="utf-8"
+            ).read())
+            self.nameTabProg()
+        return
+        
     def oneBack(self):
         """
         fonction de rappel pour revenir en arrière d'une image
@@ -313,24 +378,62 @@ class MainWindow(QtWidgets.QMainWindow):
         self.trajectoires=[] # idem pour les trajectoires des objets physiques
         self.simulated=False # va provoquer une nouvelle simulation
         self.currentFrame=0  # depuis le début
-        funcs=functionsFrom(self.ui.progEdit.toPlainText())
+        funcs=self.functionsFrom()
         for f in funcs:
             self.hooks.append(funcs[f][0])
         return funcs
 
-def functionsFrom(source):
-    """
-    Compile une source en langage Python
+    def functionsFrom(self):
+        """
+        Compile la source de l'onglet programmes en langage Python
 
-    :param source: la source du programme
-    :type  source: str
-    :return: un dictionnaire : nom de fonction -> (code compilé, spécification d'arguments, aide sur la fonction)
-    :rtype: dict
-    """
-    d={}
-    c=compile(source,"","exec")
-    exec(c,d)
-    return {f: (d[f], inspect.getargspec(d[f]), pydoc.render_doc(d[f], "aide sur %s")) for f in d if callable(d[f])}
+        :return: un dictionnaire : nom de fonction -> (code compilé, spécification d'arguments, aide sur la fonction)
+        :rtype: dict
+        """
+        source=self.ui.progEdit.toPlainText()
+        d={}
+        try:
+            c=compile(source,"","exec")
+            exec(c,d)
+            return {f: (d[f], inspect.getargspec(d[f]), pydoc.render_doc(d[f], "aide sur %s")) for f in d if callable(d[f])}
+        except IndentationError as err:
+            t=err.text
+            QtWidgets.QMessageBox.warning(
+                self, self.tr("Indentation error"),
+                self.tr("""\
+line # {l} column # {c}
+{t}
+""").format(l=err.lineno, c=err.offset, t=t)
+            )
+            return dict()
+        except SyntaxError as err:
+            t=err.text
+            QtWidgets.QMessageBox.warning(
+                self, self.tr("Syntax error"),
+                self.tr("""\
+line # {l} column # {c}
+{t}
+""").format(l=err.lineno, c=err.offset, t=t)
+            )
+            return dict()
+        except Exception as err:
+            QtWidgets.QMessageBox.warning(
+                self, self.tr("Error"), str(type(err))+" "+str(err)
+            )
+            return dict()
+        
+    def tryCompile(self):
+        """
+        essaie de compiler et renvoi juste un message d'accord si succès
+        """
+        result=self.functionsFrom()
+        if len(result):
+            QtWidgets.QMessageBox.information(
+                self, self.tr("Compilation successful"),
+                self.tr("Defined functions:\n") +
+                ", ".join(result.keys())
+            )
+        return
 
 def videoToRgbFrameList(videofile):
     """
