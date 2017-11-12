@@ -3,7 +3,7 @@
 def initial(obj):
     if obj.t==0:
         obj.x=0
-        obj.y=5
+        obj.y=0.7
         obj.vx=0
         obj.vy=0
     return
@@ -15,6 +15,6 @@ def gravite(obj):
 
 ### mise en place du rebond
 def rebond(obj):
-    if obj.y > 20 and obj.vy > 0:
+    if obj.y > 1.5 and obj.vy > 0:
         obj.vy = -obj.vy
     return
