@@ -27,5 +27,5 @@ class SVGWidget(QtSvg.QSvgWidget):
         """
         # le forçage au type QtCore.QByteArray est nécessaire pour Python2
         # qui fait mal la différence entre str et bytes
-        self.load(QtCore.QByteArray(doc.toxml(encoding="utf-8")))
+        self.load(QtCore.QByteArray(doc.documentElement.toxml(encoding="utf-8")))
         return
