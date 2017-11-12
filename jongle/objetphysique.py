@@ -4,6 +4,7 @@ from __future__ import print_function
 import Image, io, base64
 from xml.dom.minidom import parseString
 from copy import deepcopy
+from .matrix import matrix
 
 class ObjetPhysique():
     def __init__(self, parent, ident, group, matrice, vx=0, vy=0):

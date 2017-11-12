@@ -5,7 +5,7 @@ from __future__ import print_function
 import sys, inspect, pydoc, os.path, cv2
 
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg
-from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo
+from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo, QSize
 from xml.dom import minidom
 from collections import OrderedDict
 from copy import deepcopy
@@ -53,12 +53,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.loadfile()
         self.ui.tabWidget.setCurrentWidget(self.ui.sceneTab)
         self.currentFrame=0
+        self.stillFrame=0 # pointeur vers l'image gelée
         self.ui.progEdit.setPlainText(open(progfile).read())
         self.hooks=[] # liste de fonctions pour la simulation
         self.docs=[]  # liste d'images SVG
         self.trajectoires=[] # liste d'ensembles d'objets se déplaçant
         self.enregistreFonctions()
         self.frames=videoToRgbFrameList(videofile)
+        self.videoWidth, self.videoHeight, _ =  self.frames[0].shape
+        self.ui.svgWidget.resize(QSize(self.videoWidth, self.videoHeight))
         self.count=len(self.frames)
         self.ui.progressBar.setRange(0,self.count)
         self.doc=SVGImageAvecObjets(self.frames[0], self.objetsPhysiques)
@@ -114,11 +117,11 @@ class MainWindow(QtWidgets.QMainWindow):
         Les objets qui ont été cochés dans le cadre du bas se déplacent
         en même temps qu'on bouge la souris.
         """
-        if not self.timer.isActive() or self.currentFrame >= self.count:
+        if not self.timer.isActive() and self.currentFrame < self.count:
             # pas d'animation en cours, on peut bouger les objets
             if not self.dragging: return # cette ligne est redondante
             mv=event.pos() - self.prevPos
-            doc=self.docs[self.currentFrame-1]
+            doc=self.docs[self.stillFrame]
             for o in self.objIdents:
                moveGroup(doc, o.id, mv, self.ech)
                o.m.e+=mv.x()
@@ -224,6 +227,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """arrête/relanche le timer"""
         if self.timer.isActive():
             self.timer.stop()
+            self.stillFrame=self.currentFrame-1 # le compteur est toujours au-delà de l'image affichée pendant le "idle time"
             self.ui.playButton.setIcon(QtGui.QIcon.fromTheme("media-playback-pause-symbolic"))
         else:
             self.timer.start()
@@ -250,6 +254,12 @@ class MainWindow(QtWidgets.QMainWindow):
                                   self.count*self.delta_t
                               ))
         self.ui.progressBar.setValue(self.currentFrame)
+        for o in self.trajectoires[self.currentFrame-1]:
+            # met à jour les positions affichées des objets physiques
+            self.setCbText(o)
+        # définit self.stillFrame au cas où l'animation est arretée
+        if not self.timer.isActive():
+            self.stillFrame=self.currentFrame
         return
 
     def showDoc(self):
@@ -260,11 +270,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         if self.currentFrame < self.count:
             self.ui.svgWidget.refresh(self.docs[self.currentFrame])
-            self.currentFrame +=1
             self.animProgress()
-            for o in self.trajectoires[self.currentFrame-1]:
-                # met à jour les positions affichées des objets physiques
-                self.setCbText(o)
+            self.currentFrame +=1
         else:
             pass
         return
@@ -274,20 +281,19 @@ class MainWindow(QtWidgets.QMainWindow):
         Réalise la simulation de façon non-interactive, pour len(self.frames)
         images
         """
+        self.stillFrame=0
         frame=self.frames[self.currentFrame]
-        doc=minidom.parseString("<svg></svg>")
         objSet=set()
         for i, obj in self.objetsPhysiques.items():
             for h in self.hooks:
                 h(obj)
             obj.move()
-            doc.documentElement.appendChild(obj.g)
             objSet.add(obj.copy())
+        doc=SVGImageAvecObjets(frame, self.objetsPhysiques)
+        self.docs.append(doc)
         self.trajectoires.append(objSet)
         self.ui.label.setText("simultation, %d/%d : %s" %
                               (self.currentFrame, self.count, i))
-        doc=SVGImageAvecObjets(frame, self.objetsPhysiques)
-        self.docs.append(doc)
         self.currentFrame+=1
         self.ui.progressBar.setValue(self.currentFrame)
         if self.currentFrame == self.count:
