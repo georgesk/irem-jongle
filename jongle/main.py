@@ -455,7 +455,30 @@ def videoToRgbFrameList(videofile):
     return frames
 
 def main():
-    app = QtWidgets.QApplication(sys.argv)
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.add_option("-p", "--prog",
+                      action="store", type="string", dest="prog",
+                      default=os.path.join(os.path.dirname(__file__),"fonctions_base.py")
+    )
+    parser.add_option("-v", "--video",
+                      action="store", type="string", dest="video",
+                      default=os.path.join(os.path.dirname(__file__),"../videos/ffa-cropped-cut001.avi")
+    )
+    parser.add_option("-s", "--scale",
+                      action="store", type="int", dest="scale",
+                      default=290)
+    parser.add_option("-g", "--svg",
+                      action="store", type="string", dest="svg",
+                      default=os.path.join(os.path.dirname(__file__),"../ballon.svg")
+    )
+    parser.add_option("-t", "--deltat",
+                      action="store", type="float", dest="deltat",
+                      default=40e-3
+    )
+    (options, args) = parser.parse_args(sys.argv)
+    
+    app = QtWidgets.QApplication(args)
 
     # traduction
     lang=QLocale.system().name()
@@ -468,9 +491,8 @@ def main():
             QLibraryInfo.location(QLibraryInfo.TranslationsPath))
     app.installTranslator(t1)
 
-    w=MainWindow(svg="ballon.svg", delta_t=40e-3, ech=290,
-                 videofile="videos/ffa-cropped-cut001.avi",
-                 progfile="jongle/fonctions_base.py"
+    w=MainWindow(svg=options.svg, delta_t=options.deltat, ech=options.scale,
+                 videofile=options.video, progfile=options.prog
     )
 
     w.show()
