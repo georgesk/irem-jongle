@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 
+import Image, io, base64
+from xml.dom.minidom import parseString
 from copy import deepcopy
 
 class ObjetPhysique():
@@ -94,3 +97,62 @@ class ObjetPhysique():
         self.vx+=ax*self.parent.delta_t
         self.vy+=ay*self.parent.delta_t
         return
+
+def SVGImageAvecObjets(frame, objDict):
+    """
+    Crée un document SVG qui contient une image, et où l'on rajoute
+    une liste d'objets à dessiner
+
+    :param frame: une image
+    :type  frame: Array numpy 2D
+    :param objDict: dictionnaire d'objets SVG
+    :type objDict: {nom: <instance de ObjetPhysique>, ...}
+    :return: un document SVG
+    :rtype: xml.dom.Document
+    """
+    im = Image.fromarray(frame)
+    out = io.BytesIO()
+    im.save(out, format='PNG')
+    b64=base64.b64encode(out.getvalue())
+    href="data:image/png;base64,"+b64
+    doc=parseString("""\
+<svg width="{w}" height="{h}" viewBox="0 0 {w} {h}"></svg>""".format(
+    w=im.width, h=im.height
+))
+    # crée un objet image
+    image=doc.createElement("image")
+    # met des dimensions et une position
+    image.setAttribute("x","0")
+    image.setAttribute("y","0")
+    image.setAttribute("width","%d" %im.width)
+    image.setAttribute("height","%d" %im.height)
+    image.setAttribute("preserveAspectRatio","none")
+    # accroche l'image au format PNG
+    image.setAttribute("xlink:href",href)
+    doc.documentElement.appendChild(image)
+    for obj in objDict:
+        doc.documentElement.appendChild(deepcopy(objDict[obj].g))
+    return doc
+
+def moveGroup(doc, ident, mv, ech):
+    """
+    Déplace un groupe avec une transformation par matrice au sein
+    d'une image SVG.
+
+    :param doc: un document SVG
+    :type  doc: xml.dom
+    :param ident: un identifiant
+    :type  ident: str
+    :param mv: un déplacement
+    :type  mv: QPoint
+    :param ech: l'échelle globale
+    :type ech: float
+    :return: le document avec un attribut modifié
+    :rtype: xml.dom
+    """
+    g=[e for e in doc.getElementsByTagName("g") if e.getAttribute("id")==ident]
+    m=eval(g[0].getAttribute("transform"))
+    m.e+=mv.x()
+    m.f+=mv.y()
+    g[0].setAttribute("transform", str(m))
+    return doc

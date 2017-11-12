@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import sys, inspect, pydoc, os.path
+import sys, inspect, pydoc, os.path, cv2
 
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg
 from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo
@@ -11,9 +11,8 @@ from collections import OrderedDict
 from copy import deepcopy
 
 from .Ui_main import Ui_MainWindow
-from .objetphysique import ObjetPhysique
+from .objetphysique import ObjetPhysique, SVGImageAvecObjets, moveGroup
 from .matrix import matrix
-from .opencv import *
 from .pythonSyntax import PythonHighlighter
 
 
@@ -62,7 +61,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.frames=videoToRgbFrameList(videofile)
         self.count=len(self.frames)
         self.ui.progressBar.setRange(0,self.count)
-        self.doc=insertImage(self.frames[0], self.doc)
+        self.doc=SVGImageAvecObjets(self.frames[0], self.objetsPhysiques)
         self.ui.svgWidget.refresh(self.doc)
 
         self.simulated = False
@@ -287,8 +286,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.trajectoires.append(objSet)
         self.ui.label.setText("simultation, %d/%d : %s" %
                               (self.currentFrame, self.count, i))
-        doc=insertImage(frame, doc)
-        self.docs.append(deepcopy(doc))
+        doc=SVGImageAvecObjets(frame, self.objetsPhysiques)
+        self.docs.append(doc)
         self.currentFrame+=1
         self.ui.progressBar.setValue(self.currentFrame)
         if self.currentFrame == self.count:
@@ -330,6 +329,25 @@ def functionsFrom(source):
     exec(c,d)
     return {f: (d[f], inspect.getargspec(d[f]), pydoc.render_doc(d[f], "aide sur %s")) for f in d if callable(d[f])}
 
+def videoToRgbFrameList(videofile):
+    """
+    transforme une vidéo lisible par openCV en une liste d'images au
+    format RGB.
+
+    :param videofile: chemin d'un fichier vidéo
+    :type  videofile: str
+    :return: liste d'images RGB
+    :rtype: numpy Array
+    """
+    frames=[]
+    cap=cv2.VideoCapture(videofile)
+    ok=True
+    while ok:
+        ok, frame = cap.read()
+        if ok:
+            frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+    return frames
+
 def main():
     app = QtWidgets.QApplication(sys.argv)
 
@@ -344,7 +362,7 @@ def main():
             QLibraryInfo.location(QLibraryInfo.TranslationsPath))
     app.installTranslator(t1)
 
-    w=MainWindow(svg="ballon.svg", delta_t=40e-3, ech=20,
+    w=MainWindow(svg="ballon.svg", delta_t=40e-3, ech=290,
                  videofile="videos/ffa-cropped-cut001.avi",
                  progfile="jongle/fonctions_base.py"
     )
