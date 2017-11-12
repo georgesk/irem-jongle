@@ -11,7 +11,7 @@ from collections import OrderedDict
 from copy import deepcopy
 
 from .Ui_main import Ui_MainWindow
-from .objetphysique import ObjetPhysique, SVGImageAvecObjets, moveGroup
+from .objetphysique import ObjetPhysique, SVGImageAvecObjets
 from .matrix import matrix
 from .pythonSyntax import PythonHighlighter
 
@@ -123,11 +123,7 @@ class MainWindow(QtWidgets.QMainWindow):
             mv=event.pos() - self.prevPos
             doc=self.docs[self.stillFrame]
             for o in self.objIdents:
-               moveGroup(doc, o.id, mv, self.ech)
-               o.m.e+=mv.x()
-               o.m.f+=mv.y()
-               o.x=o.m.e/self.ech
-               o.y=o.m.f/self.ech
+               o.moveInSVG(doc, mv, self.ech)
                self.setCbText(o)
             self.ui.svgWidget.refresh(doc)
             self.prevPos=event.pos()
@@ -170,6 +166,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.simule()
         else:
             self.showDoc()
+            if self.currentFrame < self.count:
+                self.currentFrame +=1
         return
     
     def loadfile(self):
@@ -227,7 +225,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """arrête/relanche le timer"""
         if self.timer.isActive():
             self.timer.stop()
-            self.stillFrame=self.currentFrame-1 # le compteur est toujours au-delà de l'image affichée pendant le "idle time"
+            self.stillFrame=self.currentFrame
             self.ui.playButton.setIcon(QtGui.QIcon.fromTheme("media-playback-pause-symbolic"))
         else:
             self.timer.start()
@@ -254,7 +252,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                   self.count*self.delta_t
                               ))
         self.ui.progressBar.setValue(self.currentFrame)
-        for o in self.trajectoires[self.currentFrame-1]:
+        for o in self.trajectoires[self.currentFrame]:
             # met à jour les positions affichées des objets physiques
             self.setCbText(o)
         # définit self.stillFrame au cas où l'animation est arretée
@@ -271,7 +269,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.currentFrame < self.count:
             self.ui.svgWidget.refresh(self.docs[self.currentFrame])
             self.animProgress()
-            self.currentFrame +=1
         else:
             pass
         return
