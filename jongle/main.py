@@ -65,7 +65,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.count=len(self.frames)
         self.ui.progressBar.setRange(0,self.count)
         doc=SVGImageAvecObjets(self.frames[0], self.objetsPhysiques)
-        self.ui.svgWidget.refresh(doc)
+        self.ui.svgWidget.refresh(doc, self.frames[0])
 
         self.simulated = False
         self.dragging  = False
@@ -160,7 +160,7 @@ class MainWindow(QtWidgets.QMainWindow):
         :type  i: int
         """
         doc=SVGImageAvecObjets(self.frames[i], self.trajectoires[i])
-        self.ui.svgWidget.refresh(doc)
+        self.ui.svgWidget.refresh(doc, self.frames[i])
         self.animProgress()
         return
         

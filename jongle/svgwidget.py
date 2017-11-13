@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-from PyQt5 import QtSvg, QtCore
+from PyQt5 import QtSvg, QtCore, QtGui
 
 class SVGWidget(QtSvg.QSvgWidget):
     """
     Un widget SVG amélioré, qui permet de s'occuper de la dynamique de
-    plusieurs objets graphiques
+    plusieurs objets graphiques sur une image de fond
     """
     def __init__(self, parent=None):
         """
@@ -16,16 +16,38 @@ class SVGWidget(QtSvg.QSvgWidget):
         :type parent: QtWidgets.QWidget
         """
         QtSvg.QSvgWidget.__init__(self, parent)
+        self.bg=None # image de fond
         return
 
-    def refresh(self, doc):
+    def refresh(self, doc, background):
         """
         Remet à jour l'affichage en réinterprétant le DOM
 
         :param doc: un objet SVG
         :type doc: xml.dom
+        :param background: une image de fond
+        :type  background: numpy Array 2D 8 bits non signés
         """
-        # le forçage au type QtCore.QByteArray est nécessaire pour Python2
-        # qui fait mal la différence entre str et bytes
-        self.load(QtCore.QByteArray(doc.documentElement.toxml(encoding="utf-8")))
+        self.bg=background
+        self.load(QtCore.QByteArray(
+            doc.documentElement.toxml(encoding="utf-8"))
+        )
+        return
+
+    def paintEvent(self,event):
+        """
+        surcharge la méthode de peinture : représente d'abord l'image de fond
+        puis interprète ensuite le SVG.
+        """
+        if self.bg is not None:
+            qimage = QtGui.QImage(
+                self.bg, self.bg.shape[0],self.bg.shape[1],
+                QtGui.QImage.Format_RGB888
+            )
+            painter=QtGui.QPainter(self)
+            rect=self.rect()
+            painter.drawImage(rect,qimage,rect)
+            painter.end()
+        # trace le doc SVG
+        QtSvg.QSvgWidget.paintEvent(self, event)
         return
