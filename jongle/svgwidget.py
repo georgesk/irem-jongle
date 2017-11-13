@@ -40,8 +40,9 @@ class SVGWidget(QtSvg.QSvgWidget):
         puis interprète ensuite le SVG.
         """
         if self.bg is not None:
+            h, w, channels = self.bg.shape
             qimage = QtGui.QImage(
-                self.bg, self.bg.shape[0],self.bg.shape[1],
+                self.bg, w, h,
                 QtGui.QImage.Format_RGB888
             )
             painter=QtGui.QPainter(self)

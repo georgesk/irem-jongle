@@ -322,7 +322,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.currentFrame=0
         if self.simulated:
-            self.showDoc()
+            self.refresh(self.currentFrame)
+            self.animProgress()
         return
 
     def animProgress(self):

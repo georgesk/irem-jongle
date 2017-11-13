@@ -129,26 +129,10 @@ def SVGImageAvecObjets(frame, objDict):
     :return: un document SVG
     :rtype: xml.dom.Document
     """
-    im = Image.fromarray(frame)
-    out = io.BytesIO()
-    im.save(out, format='BMP')
-    b64=base64.b64encode(out.getvalue())
-    href="data:image/bmp;base64,"+b64
     doc=parseString("""\
 <svg width="{w}" height="{h}" viewBox="0 0 {w} {h}"></svg>""".format(
-    w=im.width, h=im.height
+    w=frame.shape[0], h=frame.shape[1]
 ))
-    # crée un objet image
-    image=doc.createElement("image")
-    # met des dimensions et une position
-    image.setAttribute("x","0")
-    image.setAttribute("y","0")
-    image.setAttribute("width","%d" %im.width)
-    image.setAttribute("height","%d" %im.height)
-    image.setAttribute("preserveAspectRatio","none")
-    # accroche l'image au format PNG
-    image.setAttribute("xlink:href",href)
-    doc.documentElement.appendChild(image)
     for ident in objDict:
         o=objDict[ident]
         doc.documentElement.appendChild(o.g)
