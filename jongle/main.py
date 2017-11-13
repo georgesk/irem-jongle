@@ -48,7 +48,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.highlight = PythonHighlighter(self.ui.progEdit.document())
         self.delta_t=delta_t if delta_t else 40e-3
         self.ech=ech if ech else 20
-        self.doc=None
         self.progFileName=None
         # trouve les objets physiques et ajoute des widgets pour y accéder
         self.objetsPhysiques=self.trouveObjetsPhysiques(minidom.parse(svg))
@@ -66,8 +65,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.svgWidget.resize(QSize(self.videoWidth, self.videoHeight))
         self.count=len(self.frames)
         self.ui.progressBar.setRange(0,self.count)
-        self.doc=SVGImageAvecObjets(self.frames[0], self.objetsPhysiques)
-        self.ui.svgWidget.refresh(self.doc)
+        doc=SVGImageAvecObjets(self.frames[0], self.objetsPhysiques)
+        self.ui.svgWidget.refresh(doc)
 
         self.simulated = False
         self.dragging  = False
