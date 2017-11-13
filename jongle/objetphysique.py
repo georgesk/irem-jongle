@@ -2,7 +2,6 @@
 from __future__ import print_function
 
 import Image, io, base64
-from xml.dom.minidom import parseString
 from copy import deepcopy
 from .matrix import matrix
 
@@ -117,24 +116,4 @@ class ObjetPhysique():
         self.vy+=ay*self.parent.delta_t
         return
 
-def SVGImageAvecObjets(frame, objDict):
-    """
-    Crée un document SVG qui contient une image, et où l'on rajoute
-    une liste d'objets à dessiner
-
-    :param frame: une image
-    :type  frame: Array numpy 2D
-    :param objDict: dictionnaire d'objets SVG
-    :type objDict: {nom: <instance de ObjetPhysique>, ...}
-    :return: un document SVG
-    :rtype: xml.dom.Document
-    """
-    doc=parseString("""\
-<svg width="{w}" height="{h}" viewBox="0 0 {w} {h}"></svg>""".format(
-    w=frame.shape[0], h=frame.shape[1]
-))
-    for ident in objDict:
-        o=objDict[ident]
-        doc.documentElement.appendChild(o.g)
-    return doc
 

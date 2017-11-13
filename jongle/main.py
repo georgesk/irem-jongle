@@ -9,9 +9,10 @@ from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo, QSize
 from xml.dom import minidom
 from collections import OrderedDict
 from copy import deepcopy
+from xml.dom.minidom import parseString
 
 from .Ui_main import Ui_MainWindow
-from .objetphysique import ObjetPhysique, SVGImageAvecObjets
+from .objetphysique import ObjetPhysique
 from .matrix import matrix
 from .pythonSyntax import PythonHighlighter
 
@@ -64,7 +65,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.svgWidget.resize(QSize(self.videoWidth, self.videoHeight))
         self.count=len(self.frames)
         self.ui.progressBar.setRange(0,self.count)
-        doc=SVGImageAvecObjets(self.frames[0], self.objetsPhysiques)
+        doc=self.SVGObjets()
         self.ui.svgWidget.refresh(doc, self.frames[0])
 
         self.simulated = False
@@ -152,6 +153,27 @@ class MainWindow(QtWidgets.QMainWindow):
             self.nameTabProg()
         return
 
+    def SVGObjets(self, objDict=None):
+        """
+        Crée un document SVG à la taille du svgWidget, qui contient les objets
+        de la liste à afficher
+
+        :param objDict: dictionnaire d'objets SVG ; s'il est None, on prendra
+        self.objetsPhysiques
+        :type objDict: {nom: <instance de ObjetPhysique>, ...}
+        :param w: largeur du document SVG
+        :return: un document SVG
+        :rtype: xml.dom.Document
+        """
+        if objDict is None:
+            objDict=self.objetsPhysiques
+        svgCode="""<svg width="{w}" height="{h}" viewBox="0 0 {w} {h}"></svg>"""
+        doc=parseString(svgCode.format(w=self.videoWidth, h=self.videoHeight))
+        for ident in objDict:
+            o=objDict[ident]
+            doc.documentElement.appendChild(o.g)
+        return doc
+
     def refresh(self, i):
         """
         rafraichit le svgWidget avec la position i
@@ -159,7 +181,7 @@ class MainWindow(QtWidgets.QMainWindow):
         :param i: index de l'image en cours
         :type  i: int
         """
-        doc=SVGImageAvecObjets(self.frames[i], self.trajectoires[i])
+        doc=self.SVGObjets(self.trajectoires[i])
         self.ui.svgWidget.refresh(doc, self.frames[i])
         self.animProgress()
         return
