@@ -58,7 +58,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.progEdit.setPlainText(open(progfile).read())
         self.hooks=[] # liste de fonctions pour la simulation
         self.trajectoires=[] # liste d'ensembles d'objets se déplaçant
-        self.enregistreFonctions()
         self.frames=videoToRgbFrameList(videofile)
         self.videoHeight, self.videoWidth, _ =  self.frames[0].shape
         self.count=len(self.frames)
@@ -73,6 +72,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.timer=QtCore.QTimer()
         self.timer.timeout.connect(self.timeHook)
         self.timer.start(1000*self.delta_t)
+        # compile et enregistre les fonctions de l'onglet d'édition
+        self.enregistreFonctions()
         return
 
     def connectUi(self):
@@ -269,6 +270,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.simulated=True
                 self.currentFrame=0
                 self.ui.label.setText(self.tr("The simulation is finished"))
+            else:
+                self.startStop()
         return
     
     def trouveObjetsPhysiques(self, doc):
@@ -344,6 +347,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.simulated:
             self.refresh(self.currentFrame)
             self.animProgress()
+        # dans tous les cas, réactive la boucle de temps
+        if not self.timer.isActive():
+            self.startStop()
         return
 
     def animProgress(self):
@@ -406,6 +412,9 @@ class MainWindow(QtWidgets.QMainWindow):
         funcs=self.functionsFrom()
         for f in funcs:
             self.hooks.append(funcs[f][0])
+        # dans tous les cas, redémarre une compilation sans attendre
+        if not self.timer.isActive():
+            self.startStop()
         return funcs
 
     def functionsFrom(self):
