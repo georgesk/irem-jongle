@@ -60,10 +60,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.trajectoires=[] # liste d'ensembles d'objets se déplaçant
         self.enregistreFonctions()
         self.frames=videoToRgbFrameList(videofile)
-        self.videoWidth, self.videoHeight, _ =  self.frames[0].shape
-        newSize=QSize(self.videoWidth, self.videoHeight)
-        self.ui.svgWidget.resize(newSize)
-        print("GRRRR", newSize, self.ui.svgWidget.size())
+        self.videoHeight, self.videoWidth, _ =  self.frames[0].shape
         self.count=len(self.frames)
         self.ui.progressBar.setRange(0,self.count)
         doc=self.SVGObjets()
@@ -524,6 +521,7 @@ def main():
     )
 
     w.show()
+    w.ui.svgWidget.resize(720,576)
     sys.exit(app.exec_())
     return
 

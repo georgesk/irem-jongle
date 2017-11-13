@@ -46,9 +46,20 @@ class SVGWidget(QtSvg.QSvgWidget):
                 QtGui.QImage.Format_RGB888
             )
             painter=QtGui.QPainter(self)
-            rect=self.rect()
+            rect=QtCore.QRect(0,0,2048,2048)
             painter.drawImage(rect,qimage,rect)
             painter.end()
         # trace le doc SVG
         QtSvg.QSvgWidget.paintEvent(self, event)
         return
+
+    def resizeEvent(self, event):
+        """
+        cette fonction est surchargée pour forcer à une taille fixe
+        dès lors que self.bg est défini
+        """
+        if self.bg is not None:
+            h, w, channels = self.bg.shape
+            self.resize(w,h)
+        QtSvg.QSvgWidget.resizeEvent(self, event)
+        

@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>840</width>
-    <height>868</height>
+    <width>908</width>
+    <height>878</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -17,6 +23,12 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QFrame" name="frame">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
@@ -214,10 +226,16 @@
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="SVGWidget" name="svgWidget" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
-            <width>800</width>
-            <height>600</height>
+            <width>0</width>
+            <height>0</height>
            </size>
           </property>
          </widget>
@@ -278,7 +296,7 @@
     <item>
      <widget class="QGroupBox" name="poBox">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -322,7 +340,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>840</width>
+     <width>908</width>
      <height>20</height>
     </rect>
    </property>
