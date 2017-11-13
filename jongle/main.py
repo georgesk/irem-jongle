@@ -57,7 +57,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.stillFrame=0 # pointeur vers l'image gelée
         self.ui.progEdit.setPlainText(open(progfile).read())
         self.hooks=[] # liste de fonctions pour la simulation
-        self.docs=[]  # liste d'images SVG
         self.trajectoires=[] # liste d'ensembles d'objets se déplaçant
         self.enregistreFonctions()
         self.frames=videoToRgbFrameList(videofile)
@@ -152,6 +151,18 @@ class MainWindow(QtWidgets.QMainWindow):
             ).read())
             self.nameTabProg()
         return
+
+    def refresh(self, i):
+        """
+        rafraichit le svgWidget avec la position i
+
+        :param i: index de l'image en cours
+        :type  i: int
+        """
+        doc=SVGImageAvecObjets(self.frames[i], self.trajectoires[i])
+        self.ui.svgWidget.refresh(doc)
+        self.animProgress()
+        return
         
     def oneBack(self):
         """
@@ -160,8 +171,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.simulated:
             if self.currentFrame > 0:
                 self.currentFrame -=1
-                self.ui.svgWidget.refresh(self.docs[self.currentFrame])
-                self.animProgress()
+                self.refresh(self.currentFrame)
         return
 
     def oneForward(self):
@@ -171,8 +181,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.simulated:
             if self.currentFrame < self.count-1:
                 self.currentFrame +=1
-                self.ui.svgWidget.refresh(self.docs[self.currentFrame])
-                self.animProgress()
+                self.refresh(self.currentFrame)
         return
 
         
@@ -186,11 +195,11 @@ class MainWindow(QtWidgets.QMainWindow):
             # pas d'animation en cours, on peut bouger les objets
             if not self.dragging: return # cette ligne est redondante
             mv=event.pos() - self.prevPos
-            doc=self.docs[self.stillFrame]
-            for o in self.objIdents:
-               o.moveInSVG(doc, mv, self.ech)
+            objetsPhysiques=self.trajectoires[self.stillFrame]
+            for _,o in objetsPhysiques.items():
+               o.moveInSVG(mv, self.ech)
                self.setCbText(o)
-            self.ui.svgWidget.refresh(doc)
+            self.refresh(self.stillFrame)
             self.prevPos=event.pos()
         return
 
@@ -320,7 +329,8 @@ class MainWindow(QtWidgets.QMainWindow):
                                   self.count*self.delta_t
                               ))
         self.ui.progressBar.setValue(self.currentFrame)
-        for o in self.trajectoires[self.currentFrame]:
+        objetsPhysique=self.trajectoires[self.currentFrame]
+        for _,o in objetsPhysique.items():
             # met à jour les positions affichées des objets physiques
             self.setCbText(o)
         # définit self.stillFrame au cas où l'animation est arretée
@@ -335,7 +345,7 @@ class MainWindow(QtWidgets.QMainWindow):
         Elle provoque l'affichage d'une nouvelle image
         """
         if self.currentFrame < self.count:
-            self.ui.svgWidget.refresh(self.docs[self.currentFrame])
+            self.refresh(self.currentFrame)
             self.animProgress()
         else:
             pass
@@ -348,15 +358,17 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.stillFrame=0
         frame=self.frames[self.currentFrame]
-        objSet=set()
         for i, obj in self.objetsPhysiques.items():
             for h in self.hooks:
                 h(obj)
             obj.move()
-            objSet.add(obj.copy())
-        doc=SVGImageAvecObjets(frame, self.objetsPhysiques)
-        self.docs.append(doc)
-        self.trajectoires.append(objSet)
+        objetsPhysiques=OrderedDict()
+        for i, obj in self.objetsPhysiques.items():
+            objetsPhysiques[i]=self.objetsPhysiques[i].copy()
+        # self.trajectoires va etre une liste d'objets physiques
+        # dont la position est actualisée
+        # cependant que self.frames contient les images de la vidéo
+        self.trajectoires.append(objetsPhysiques)
         self.ui.label.setText("simultation, %d/%d : %s" %
                               (self.currentFrame, self.count, i))
         self.currentFrame+=1
@@ -377,7 +389,6 @@ class MainWindow(QtWidgets.QMainWindow):
         :rtype: dict
         """
         self.hooks=[] # efface les anciennes fonctions
-        self.docs=[]  # efface les images de la précédente simulation
         self.trajectoires=[] # idem pour les trajectoires des objets physiques
         self.simulated=False # va provoquer une nouvelle simulation
         self.currentFrame=0  # depuis le début

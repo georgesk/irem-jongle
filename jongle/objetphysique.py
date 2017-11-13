@@ -56,28 +56,23 @@ class ObjetPhysique():
     def __str__(self):
         return "Objet physique « {id} » : pos=({x}, {y}) vit=({vx}, {vy})".format(**self.__dict__)
 
-    def moveInSVG(self, doc, mv, ech):
+    def moveInSVG(self, mv, ech):
         """
-        Déplace un groupe avec une transformation par matrice au sein
+        Déplace un objet physique avec une transformation par matrice au sein
         d'une image SVG.
 
-        :param doc: un document SVG
-        :type  doc: xml.dom
         :param mv: un déplacement en mètre
         :type  mv: QPoint
         :param ech: l'échelle globale
         :type ech: float
-        :return: le document avec un attribut modifié
-        :rtype: xml.dom
         """
-        g=[e for e in doc.getElementsByTagName("g") if e.getAttribute("id")==self.id]
-        m=eval(g[0].getAttribute("transform"))
+        m=eval(self.g.getAttribute("transform"))
         m.e+=mv.x()
         m.f+=mv.y()
-        g[0].setAttribute("transform", str(m))
+        self.g.setAttribute("transform", str(m))
         self.x=m.e/ech
         self.y=m.f/ech
-        return doc
+        return
 
     def move(self):
         """
