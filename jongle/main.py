@@ -157,8 +157,7 @@ class MainWindow(QtWidgets.QMainWindow):
         Crée un document SVG à la taille du svgWidget, qui contient les objets
         de la liste à afficher
 
-        :param objDict: dictionnaire d'objets SVG ; s'il est None, on prendra
-        self.objetsPhysiques
+        :param objDict: dictionnaire d'objets SVG ; s'il est None, on prendra self.objetsPhysiques
         :type objDict: {nom: <instance de ObjetPhysique>, ...}
         :param w: largeur du document SVG
         :return: un document SVG

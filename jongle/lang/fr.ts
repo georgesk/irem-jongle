@@ -133,12 +133,12 @@
         <translation>&amp;Ouvrir</translation>
     </message>
     <message>
-        <location filename="../main.py" line="361"/>
+        <location filename="../main.py" line="362"/>
         <source>video t = </source>
         <translation>vidéo t= </translation>
     </message>
     <message>
-        <location filename="../main.py" line="278"/>
+        <location filename="../main.py" line="274"/>
         <source>The simulation is finished</source>
         <translation>La simulation est finie</translation>
     </message>
@@ -158,27 +158,27 @@
         <translation>UNe image plus tard</translation>
     </message>
     <message>
-        <location filename="../main.py" line="108"/>
+        <location filename="../main.py" line="105"/>
         <source>File to save the programs</source>
         <translation>Fichier pour enregistrer les programmes</translation>
     </message>
     <message>
-        <location filename="../main.py" line="123"/>
+        <location filename="../main.py" line="120"/>
         <source>Programs ({p})</source>
         <translation>Programmes ({p})</translation>
     </message>
     <message>
-        <location filename="../main.py" line="150"/>
+        <location filename="../main.py" line="147"/>
         <source>Open a file</source>
         <translation>Ouvrir un fichier</translation>
     </message>
     <message>
-        <location filename="../main.py" line="433"/>
+        <location filename="../main.py" line="437"/>
         <source>Indentation error</source>
         <translation>Erreur d&apos;indentation</translation>
     </message>
     <message>
-        <location filename="../main.py" line="443"/>
+        <location filename="../main.py" line="447"/>
         <source>line # {l} column # {c}
 {t}
 </source>
@@ -187,22 +187,22 @@
 </translation>
     </message>
     <message>
-        <location filename="../main.py" line="443"/>
+        <location filename="../main.py" line="447"/>
         <source>Syntax error</source>
         <translation>Erreur de syntaxe</translation>
     </message>
     <message>
-        <location filename="../main.py" line="452"/>
+        <location filename="../main.py" line="456"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
     <message>
-        <location filename="../main.py" line="463"/>
+        <location filename="../main.py" line="467"/>
         <source>Compilation successful</source>
         <translation>Compilation réussie</translation>
     </message>
     <message>
-        <location filename="../main.py" line="463"/>
+        <location filename="../main.py" line="467"/>
         <source>Defined functions:
 </source>
         <translation>Fonctions définies :
