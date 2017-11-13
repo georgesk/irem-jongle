@@ -131,9 +131,9 @@ def SVGImageAvecObjets(frame, objDict):
     """
     im = Image.fromarray(frame)
     out = io.BytesIO()
-    im.save(out, format='PNG')
+    im.save(out, format='BMP')
     b64=base64.b64encode(out.getvalue())
-    href="data:image/png;base64,"+b64
+    href="data:image/bmp;base64,"+b64
     doc=parseString("""\
 <svg width="{w}" height="{h}" viewBox="0 0 {w} {h}"></svg>""".format(
     w=im.width, h=im.height
