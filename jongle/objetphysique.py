@@ -47,7 +47,7 @@ class ObjetPhysique():
         :rtype: ObjetPhysique
         """
         result=ObjetPhysique(
-            self.parent, self.id, self.g,
+            self.parent, self.id, deepcopy(self.g),
             deepcopy(self.m), self.vx, self.vy
         )
         result.cb=self.cb
@@ -149,7 +149,8 @@ def SVGImageAvecObjets(frame, objDict):
     # accroche l'image au format PNG
     image.setAttribute("xlink:href",href)
     doc.documentElement.appendChild(image)
-    for obj in objDict:
-        doc.documentElement.appendChild(deepcopy(objDict[obj].g))
+    for ident in objDict:
+        o=objDict[ident].copy()
+        doc.documentElement.appendChild(o.g)
     return doc
 

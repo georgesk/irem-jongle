@@ -357,18 +357,13 @@ class MainWindow(QtWidgets.QMainWindow):
         images
         """
         self.stillFrame=0
-        frame=self.frames[self.currentFrame]
+        op=OrderedDict()
         for i, obj in self.objetsPhysiques.items():
             for h in self.hooks:
                 h(obj)
             obj.move()
-        objetsPhysiques=OrderedDict()
-        for i, obj in self.objetsPhysiques.items():
-            objetsPhysiques[i]=self.objetsPhysiques[i].copy()
-        # self.trajectoires va etre une liste d'objets physiques
-        # dont la position est actualisée
-        # cependant que self.frames contient les images de la vidéo
-        self.trajectoires.append(objetsPhysiques)
+            op[i]=obj.copy()
+        self.trajectoires.append(op)
         self.ui.label.setText("simultation, %d/%d : %s" %
                               (self.currentFrame, self.count, i))
         self.currentFrame+=1
