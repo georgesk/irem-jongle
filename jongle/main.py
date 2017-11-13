@@ -236,12 +236,19 @@ class MainWindow(QtWidgets.QMainWindow):
         (quand la simulation est terminée, on dispose de toutes les images
         de l'animation, prêtes à servir.
         """
-        if not self.simulated:
-            self.simule()
-        else:
-            self.showDoc()
-            if self.currentFrame < self.count:
-                self.currentFrame +=1
+        if self.currentFrame < self.count:
+            if not self.simulated:
+                self.simule()
+                self.simulProgress()
+            else:
+                self.refresh(self.currentFrame)
+                self.animProgress()
+            self.currentFrame +=1
+        else: # self.currentFrame == self.count
+            if not self.simulated:
+                self.simulated=True
+                self.currentFrame=0
+                self.ui.label.setText(self.tr("The simulation is finished"))
         return
     
     def trouveObjetsPhysiques(self, doc):
@@ -338,19 +345,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.stillFrame=self.currentFrame
         return
 
-    def showDoc(self):
-        """
-        Fonction rappelée par le timer, toutes les 40 millisecondes.
-
-        Elle provoque l'affichage d'une nouvelle image
-        """
-        if self.currentFrame < self.count:
-            self.refresh(self.currentFrame)
-            self.animProgress()
-        else:
-            pass
-        return
-    
     def simule(self):
         """
         Réalise la simulation de façon non-interactive, pour len(self.frames)
@@ -364,14 +358,15 @@ class MainWindow(QtWidgets.QMainWindow):
             obj.move()
             op[i]=obj.copy()
         self.trajectoires.append(op)
-        self.ui.label.setText("simultation, %d/%d : %s" %
-                              (self.currentFrame, self.count, i))
-        self.currentFrame+=1
+        return
+
+    def simulProgress(self):
+        """
+        met à jour la barre de progression durant la simulation
+        """
+        self.ui.label.setText("simultation, %d/%d" %
+                              (self.currentFrame, self.count))
         self.ui.progressBar.setValue(self.currentFrame)
-        if self.currentFrame == self.count:
-            self.currentFrame=0
-            self.simulated=True
-            self.ui.label.setText(self.tr("The simulation is finished"))
         return
 
     def enregistreFonctions(self):
