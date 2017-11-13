@@ -61,7 +61,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.enregistreFonctions()
         self.frames=videoToRgbFrameList(videofile)
         self.videoWidth, self.videoHeight, _ =  self.frames[0].shape
-        self.ui.svgWidget.resize(QSize(self.videoWidth, self.videoHeight))
+        newSize=QSize(self.videoWidth, self.videoHeight)
+        self.ui.svgWidget.resize(newSize)
+        print("GRRRR", newSize, self.ui.svgWidget.size())
         self.count=len(self.frames)
         self.ui.progressBar.setRange(0,self.count)
         doc=self.SVGObjets()
