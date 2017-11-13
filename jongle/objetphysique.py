@@ -150,7 +150,7 @@ def SVGImageAvecObjets(frame, objDict):
     image.setAttribute("xlink:href",href)
     doc.documentElement.appendChild(image)
     for ident in objDict:
-        o=objDict[ident].copy()
+        o=objDict[ident]
         doc.documentElement.appendChild(o.g)
     return doc
 
