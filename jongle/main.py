@@ -8,7 +8,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg
 from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo, QSize
 from xml.dom import minidom
 from collections import OrderedDict
-from copy import deepcopy
 from xml.dom.minidom import parseString
 
 from .Ui_main import Ui_MainWindow

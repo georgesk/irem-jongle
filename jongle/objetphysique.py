@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import Image, io, base64
 from copy import deepcopy
 from .matrix import matrix
 
