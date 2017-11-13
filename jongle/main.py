@@ -49,9 +49,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.delta_t=delta_t if delta_t else 40e-3
         self.ech=ech if ech else 20
         self.doc=None
-        self.svg=svg
         self.progFileName=None
-        self.loadfile()
+        # trouve les objets physiques et ajoute des widgets pour y accéder
+        self.objetsPhysiques=self.trouveObjetsPhysiques(minidom.parse(svg))
+        self.afficheListeObjets()
         self.ui.tabWidget.setCurrentWidget(self.ui.sceneTab)
         self.currentFrame=0
         self.stillFrame=0 # pointeur vers l'image gelée
@@ -235,31 +236,35 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.currentFrame +=1
         return
     
-    def loadfile(self):
-        """
-        Récupère un fichier SVG, l'analyse et l'affiche.
-        """
-        self.doc=minidom.parse(self.svg)
-        self.objetsPhysiques=OrderedDict()
-        self.trouveObjetsPhysiques()
-        return
-
-    def trouveObjetsPhysiques(self):
+    def trouveObjetsPhysiques(self, doc):
         """
         met à jour la liste self.objetsPhysiques avec tous les
         elements <g> du DOM, qui ont un attribut
         transform="matrix(a,b,c,d,e,f)", puis crée des cases à cocher
         pour sélectionner les objets physiques.
+
+        :param doc: un document SVG
+        :type  doc: xml.dom
+        :return: un dictionnaire ordonné identifiant => ObjetPhysique
+        :rtype: OrderedDict((identifiant, <ObjetPhysique>), ...)
         """
-        for g in self.doc.getElementsByTagName("g"):
+        result=OrderedDict()
+        for g in doc.getElementsByTagName("g"):
             try:
                 m= eval(g.getAttribute("transform"))
                 if isinstance(m, matrix):
                     ident=g.getAttribute("id")
                     o=ObjetPhysique(self,ident, g, m)
-                    self.objetsPhysiques[ident]=o
+                    result[ident]=o
             except:
                 pass
+        return result
+
+    def afficheListeObjets(self):
+        """
+        Affiche la liste des objetx en bas du premier ongle, et ajoute
+        pour chacun une case à cocher si on le veut déplaçable à la souris
+        """
         poBox=self.ui.poBox
         layout = poBox.layout()
         for ident,o in  self.objetsPhysiques.items():
@@ -267,7 +272,6 @@ class MainWindow(QtWidgets.QMainWindow):
             o.cb=b
             layout.addWidget(b)
             b.stateChanged.connect(self.selectObject(o))
-        return
 
     def selectObject(self,op):
         """
