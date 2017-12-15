@@ -46,7 +46,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.connectUi()
         self.highlight = PythonHighlighter(self.ui.progEdit.document())
         self.delta_t=delta_t if delta_t else 40e-3
-        self.ech=ech if ech else 20
+        self.ech=ech if ech else 200
         self.progFileName=None
         # trouve les objets physiques et ajoute des widgets pour y accéder
         self.objetsPhysiques=self.trouveObjetsPhysiques(minidom.parse(svg))
