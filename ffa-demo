@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd $(dirname $0)
+exec ./jongle.py --prog ffa-simul.py --video videos/ffa-cropped-cut001.avi --svg ballon.svg --deltat 40e-3 --scale 290
