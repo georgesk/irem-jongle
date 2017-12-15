@@ -359,7 +359,7 @@ class MainWindow(QtWidgets.QMainWindow):
                               "%6.3f / %6.3f s" % (
                                   self.currentFrame*self.delta_t,
                                   self.count*self.delta_t
-                              ))
+                              ) + self.tr("(# %d)") % self.currentFrame)
         self.ui.progressBar.setValue(self.currentFrame)
         objetsPhysique=self.trajectoires[self.currentFrame]
         for _,o in objetsPhysique.items():

@@ -90,7 +90,7 @@ class ObjetPhysique():
     def t(self):
         """
         cette propriété permet d'interroger la date ; en fait celle-ci est
-        héritée du parent, et elle est liée un nuvéro de l'image en cours
+        héritée du parent, et elle est liée un numéro de l'image en cours
         de traitement. Comme dans la mécanique newtonnienne, le temps est
         universel.
 
@@ -98,6 +98,16 @@ class ObjetPhysique():
         :rtype: float
         """
         return self.parent.currentFrame * self.parent.delta_t
+
+    @property
+    def numero(self):
+        """
+        cette propriété permet d'interroger le numéro de l'image en cours.
+
+        :return: numéro de l'image
+        :rtype: int
+        """
+        return self.parent.currentFrame
 
     def accelere(self, ax, ay):
         """
