@@ -85,10 +85,8 @@ def coup7(obj):
 
 ### huitième coup de pied
 def coup8(obj):
-  print("Hello", obj.t, obj.numero, obj)
   if obj.numero==104 and obj.id=="ballon-1":
     ### ajoute delta V = (0, 4.5) N.B. : l'axe y est vers le bas
     obj.vx = obj.vx + 0.0
     obj.vy = obj.vy - 4.5
-    print("GRRRR", obj.t, obj.numero, obj)
   return
