@@ -1,5 +1,6 @@
 from PyQt5.QtGui import QFont, QFontMetrics, QColor
-from PyQt5.Qsci import QsciScintilla, QsciLexerPython
+from PyQt5.Qsci import QsciScintilla, QsciLexerPython, QsciAPIs
+import PyQt5, os.path
 
 class CodeEdit(QsciScintilla):
     def __init__(self, parent=None):
@@ -33,8 +34,18 @@ class CodeEdit(QsciScintilla):
 
         # Auto-indentation
         self.setAutoIndent(True)
-         
+        self.setIndentationsUseTabs(False)
 
+        """
+        # auto-completion
+        api = QsciAPIs(lexer)
+        # importation du fichier d'API
+        if api.load("/usr/share/qt5/qsci/api/python/Python-3.5.api"):
+            print("\nL'installation de Python-3.5.api produirait une erreur de segmentation")
+            #api.prepare()
+            #self.setAutoCompletionThreshold(1)
+            #self.setAutoCompletionSource(QsciScintilla.AcsAll)
+        """
 
 from PyQt5.QtWidgets import QApplication
 import sys
