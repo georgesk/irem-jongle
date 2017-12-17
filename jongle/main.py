@@ -223,8 +223,9 @@ class MainWindow(QtWidgets.QMainWindow):
             mv=event.pos() - self.prevPos
             objetsPhysiques=self.trajectoires[self.stillFrame]
             for _,o in objetsPhysiques.items():
-               o.moveInSVG(mv, self.ech)
-               self.setCbText(o)
+                if not o.cb.isChecked(): continue
+                o.moveInSVG(mv, self.ech)
+                self.setCbText(o)
             self.refresh(self.stillFrame)
             self.prevPos=event.pos()
         return
