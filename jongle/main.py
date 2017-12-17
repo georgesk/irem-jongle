@@ -93,9 +93,6 @@ class MainWindow(QtWidgets.QMainWindow):
         return
 
     def saveAs(self):
-        self.back() # remise à zéro
-        if self.timer.isActive():
-            self.startStop()
         if not self.progFileName:
             defaultDir=""
         else:
