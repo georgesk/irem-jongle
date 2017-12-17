@@ -124,9 +124,9 @@ class MainWindow(QtWidgets.QMainWindow):
         return
 
     def save(self):
+        self.back() # remise à zéro
         if self.timer.isActive():
             self.startStop()
-        self.back() # remise à zéro
         if not self.progFileName:
             return self.saveAs()
         with io.open(self.progFileName, mode="w", encoding="utf-8") as out:
