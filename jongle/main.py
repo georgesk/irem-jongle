@@ -13,7 +13,6 @@ from xml.dom.minidom import parseString
 from .Ui_main import Ui_MainWindow
 from .objetphysique import ObjetPhysique
 from .matrix import matrix
-from .pythonSyntax import PythonHighlighter
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -45,7 +44,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
         self.connectUi()
-        self.highlight = PythonHighlighter(self.ui.progEdit.document())
         self.delta_t=delta_t if delta_t else 40e-3
         self.ech=ech if ech else 200
         self.progFileName=None
@@ -55,7 +53,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.tabWidget.setCurrentWidget(self.ui.sceneTab)
         self.currentFrame=0
         self.stillFrame=0 # pointeur vers l'image gelée
-        self.ui.progEdit.setPlainText(open(progfile).read())
+        self.ui.progEdit.setText(open(progfile).read())
         self.hooks=[] # liste de fonctions pour la simulation
         self.trajectoires=[] # liste d'ensembles d'objets se déplaçant
         self.frames=videoToRgbFrameList(videofile)
@@ -143,7 +141,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if not self.progFileName:
             return self.saveAs()
         with io.open(self.progFileName, mode="w", encoding="utf-8") as out:
-            out.write(self.ui.progEdit.toPlainText())
+            out.write(self.ui.progEdit.text())
         return
         
     def openFile(self):
@@ -447,7 +445,7 @@ class MainWindow(QtWidgets.QMainWindow):
         :return: un dictionnaire : nom de fonction -> (code compilé, spécification d'arguments, aide sur la fonction)
         :rtype: dict
         """
-        source=self.ui.progEdit.toPlainText()
+        source=self.ui.progEdit.text()
         d={}
         try:
             c=compile(source,"","exec")

@@ -223,7 +223,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="sceneTab">
        <attribute name="title">
@@ -254,7 +254,7 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QTextEdit" name="progEdit"/>
+         <widget class="CodeEdit" name="progEdit"/>
         </item>
         <item>
          <widget class="QFrame" name="frame_2">
@@ -450,6 +450,11 @@
    <extends>QWidget</extends>
    <header>.svgwidget</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CodeEdit</class>
+   <extends>QTextEdit</extends>
+   <header>.codeEdit</header>
   </customwidget>
  </customwidgets>
  <resources/>
