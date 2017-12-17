@@ -51,22 +51,23 @@ class ObjetPhysique():
         return result
     
     def __str__(self):
-        return "Objet physique « {id} » : pos=({x}, {y}) vit=({vx}, {vy})".format(**self.__dict__)
+        return "Objet physique « {id} » : pos=({x}, {y}) vit=({vx}, {vy}) m={m}".format(**self.__dict__)
 
     def moveInSVG(self, mv, ech):
         """
         Déplace un objet physique avec une transformation par matrice au sein
         d'une image SVG.
 
-        :param mv: un déplacement en mètre
+        :param mv: un déplacement en pixel
         :type  mv: QPoint
-        :param ech: l'échelle globale
+        :param ech: l'échelle globale (pixel/mètre)
         :type ech: float
         """
         m=eval(self.g.getAttribute("transform"))
         m.e+=mv.x()
         m.f+=mv.y()
         self.g.setAttribute("transform", str(m))
+        self.m=m
         self.x=m.e/ech
         self.y=m.f/ech
         return
@@ -78,6 +79,7 @@ class ObjetPhysique():
         vy*delta_t. Comme self.g est un objet groupe SVG sous-jacent, on en
         modifie la matrice de transformation, en tenant compte de l'échelle
         du widget parent.
+        Les dimensions sont en mètre
         """
         self.x+=self.vx*self.parent.delta_t
         self.y+=self.vy*self.parent.delta_t
