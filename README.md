@@ -34,3 +34,8 @@ On peut passer doucement la séquence vidéo et la simulation, image par image.
 Une fois que le modèle est au point, on peut demander de générer une nouvelle
 vidéo qui superpose la ou les icônes avec la vidéo de fond.
 
+## Dépendences ##
+    python3-pyqt5
+    python3-pyqt5.qsci
+    python3-opencv
+	libqscintilla2-doc (pour l'auto-completion)
