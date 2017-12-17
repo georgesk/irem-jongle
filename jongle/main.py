@@ -5,6 +5,7 @@ import sys, inspect, pydoc, os.path, cv2, io
 
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg
 from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo, QSize
+from PyQt5.QtGui import QPalette, QColor
 from xml.dom import minidom
 from collections import OrderedDict
 from xml.dom.minidom import parseString
@@ -65,6 +66,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.svgWidget.refresh(doc, self.frames[0])
 
         self.simulated = False
+        
+        self.paletteProgressSimul=self.ui.progressBar.palette()
+        self.paletteProgressSimul.setColor(QPalette.Highlight, QColor("red"))
+        self.paletteProgressVideo=self.ui.progressBar.palette()
+        self.paletteProgressVideo.setColor(QPalette.Highlight, QColor("blue"))
+        
         self.dragging  = False
         self.objIdents = set() # identifiants des objets sélectionnés
         # la boucle pour afficher les images
@@ -131,9 +138,9 @@ class MainWindow(QtWidgets.QMainWindow):
         return
         
     def openFile(self):
+        self.back() # remise à zéro
         if self.timer.isActive():
             self.startStop()
-        self.back() # remise à zéro
         if not self.progFileName:
             defaultDir=""
         else:
@@ -146,6 +153,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.progFileName, encoding="utf-8"
             ).read())
             self.nameTabProg()
+            # recompilation forcée
+            self.simulated = False
+            self.startStop()
         return
 
     def SVGObjets(self, objDict=None):
@@ -356,7 +366,8 @@ class MainWindow(QtWidgets.QMainWindow):
                               "%6.3f / %6.3f s" % (
                                   self.currentFrame*self.delta_t,
                                   self.count*self.delta_t
-                              ) + self.tr("(# %d)") % self.currentFrame)
+                              ) + " " + self.tr("(# %d)") % self.currentFrame)
+        self.ui.progressBar.setPalette(self.paletteProgressVideo)
         self.ui.progressBar.setValue(self.currentFrame)
         objetsPhysique=self.trajectoires[self.currentFrame]
         for _,o in objetsPhysique.items():
@@ -388,6 +399,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.ui.label.setText("simultation, %d/%d" %
                               (self.currentFrame, self.count))
+        self.ui.progressBar.setPalette(self.paletteProgressSimul)
         self.ui.progressBar.setValue(self.currentFrame)
         return
 

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="fr_FR">
+<!DOCTYPE TS><TS version="2.0" language="fr_FR" sourcelanguage="">
 <context>
     <name>MainWindow</name>
     <message>
@@ -134,12 +133,12 @@
         <translation>&amp;Ouvrir</translation>
     </message>
     <message>
-        <location filename="../main.py" line="360"/>
+        <location filename="../main.py" line="367"/>
         <source>video t = </source>
         <translation>vidéo t = </translation>
     </message>
     <message>
-        <location filename="../main.py" line="272"/>
+        <location filename="../main.py" line="279"/>
         <source>The simulation is finished</source>
         <translation>La simulation est finie</translation>
     </message>
@@ -159,27 +158,27 @@
         <translation>UNe image plus tard</translation>
     </message>
     <message>
-        <location filename="../main.py" line="104"/>
+        <location filename="../main.py" line="108"/>
         <source>File to save the programs</source>
         <translation>Fichier pour enregistrer les programmes</translation>
     </message>
     <message>
-        <location filename="../main.py" line="119"/>
+        <location filename="../main.py" line="123"/>
         <source>Programs ({p})</source>
         <translation>Programmes ({p})</translation>
     </message>
     <message>
-        <location filename="../main.py" line="146"/>
+        <location filename="../main.py" line="150"/>
         <source>Open a file</source>
         <translation>Ouvrir un fichier</translation>
     </message>
     <message>
-        <location filename="../main.py" line="435"/>
+        <location filename="../main.py" line="444"/>
         <source>Indentation error</source>
         <translation>Erreur d&apos;indentation</translation>
     </message>
     <message>
-        <location filename="../main.py" line="445"/>
+        <location filename="../main.py" line="454"/>
         <source>line # {l} column # {c}
 {t}
 </source>
@@ -188,29 +187,29 @@
 </translation>
     </message>
     <message>
-        <location filename="../main.py" line="445"/>
+        <location filename="../main.py" line="454"/>
         <source>Syntax error</source>
         <translation>Erreur de syntaxe</translation>
     </message>
     <message>
-        <location filename="../main.py" line="454"/>
+        <location filename="../main.py" line="463"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
     <message>
-        <location filename="../main.py" line="465"/>
+        <location filename="../main.py" line="474"/>
         <source>Compilation successful</source>
         <translation>Compilation réussie</translation>
     </message>
     <message>
-        <location filename="../main.py" line="465"/>
+        <location filename="../main.py" line="474"/>
         <source>Defined functions:
 </source>
         <translation>Fonctions définies :
 </translation>
     </message>
     <message>
-        <location filename="../main.py" line="360"/>
+        <location filename="../main.py" line="367"/>
         <source>(# %d)</source>
         <translation>(N° %d)</translation>
     </message>
