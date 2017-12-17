@@ -93,9 +93,9 @@ class MainWindow(QtWidgets.QMainWindow):
         return
 
     def saveAs(self):
+        self.back() # remise à zéro
         if self.timer.isActive():
             self.startStop()
-        self.back() # remise à zéro
         if not self.progFileName:
             defaultDir=""
         else:
@@ -106,10 +106,10 @@ class MainWindow(QtWidgets.QMainWindow):
         if ok:
             if not self.progFileName.endswith(".py"):
                 self.progFileName+=".py"
-                self.nameTabProg()
-                return self.save()
-            else:
-                return None
+            self.nameTabProg()
+            return self.save()
+        else:
+            return None
 
     def nameTabProg(self):
         """
