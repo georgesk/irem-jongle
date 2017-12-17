@@ -66,6 +66,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.svgWidget.refresh(doc, self.frames[0])
 
         self.simulated = False
+        self.ui.simulButton.setEnabled(True)
         
         self.paletteProgressSimul=self.ui.progressBar.palette()
         self.paletteProgressSimul.setColor(QPalette.Highlight, QColor("red"))
@@ -97,6 +98,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.actionSave_standalone.triggered.connect(self.save)
         self.ui.actionOpen.triggered.connect(self.openFile)
         self.ui.actionCheck_Synta_x.triggered.connect(self.tryCompile)
+        self.ui.progEdit.textChanged.connect(self.dirty)
+        return
+
+    def dirty(self):
+        """
+        invalide la source Python, il faudra recompiler
+        """
+        self.ui.simulButton.setEnabled(True)
         return
 
     def saveAs(self):
@@ -155,6 +164,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.nameTabProg()
             # recompilation forcée
             self.simulated = False
+            self.ui.simulButton.setEnabled(True)
             self.startStop()
         return
 
@@ -224,6 +234,7 @@ class MainWindow(QtWidgets.QMainWindow):
             objetsPhysiques=self.trajectoires[self.stillFrame]
             for _,o in objetsPhysiques.items():
                 if not o.cb.isChecked(): continue
+                self.dirty() # si on a bougé il faut re-simuler
                 o.moveInSVG(mv, self.ech)
                 self.setCbText(o)
             self.refresh(self.stillFrame)
@@ -265,6 +276,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         if self.currentFrame < self.count:
             if not self.simulated:
+                # ne pas relancer en cours de simulation
+                self.ui.simulButton.setEnabled(False)
                 self.simule()
                 self.simulProgress()
             else:
@@ -274,6 +287,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else: # self.currentFrame == self.count
             if not self.simulated:
                 self.simulated=True
+                self.ui.simulButton.setEnabled(False)
                 self.currentFrame=0
                 self.ui.label.setText(self.tr("The simulation is finished"))
             else:
@@ -416,6 +430,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.hooks=[] # efface les anciennes fonctions
         self.trajectoires=[] # idem pour les trajectoires des objets physiques
         self.simulated=False # va provoquer une nouvelle simulation
+        self.ui.simulButton.setEnabled(True)
         self.currentFrame=0  # depuis le début
         funcs=self.functionsFrom()
         for f in funcs:
