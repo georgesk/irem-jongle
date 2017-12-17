@@ -138,6 +138,12 @@ les fonctions de rappel.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="jongle.main.MainWindow.dirty">
+<code class="descname">dirty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/main.html#MainWindow.dirty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.main.MainWindow.dirty" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>invalide la source Python, il faudra recompiler</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="jongle.main.MainWindow.enregistreFonctions">
 <code class="descname">enregistreFonctions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jongle/main.html#MainWindow.enregistreFonctions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jongle.main.MainWindow.enregistreFonctions" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Enregistre les fonctions écrites dans l&#8217;onglet de programme,
@@ -483,7 +489,8 @@ un QCheckBox.</p>
 self.x et self.y, en y additionnant respectivement vx*delta_t et
 vy*delta_t. Comme self.g est un objet groupe SVG sous-jacent, on en
 modifie la matrice de transformation, en tenant compte de l&#8217;échelle
-du widget parent.</p>
+du widget parent.
+Les dimensions sont en mètre</p>
 </dd></dl>
 
 <dl class="method">
@@ -496,10 +503,26 @@ d&#8217;une image SVG.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><ul class="first last simple">
-<li><strong>mv</strong> (<em>QPoint</em>) &#8211; un déplacement en mètre</li>
-<li><strong>ech</strong> (<em>float</em>) &#8211; l&#8217;échelle globale</li>
+<li><strong>mv</strong> (<em>QPoint</em>) &#8211; un déplacement en pixel</li>
+<li><strong>ech</strong> (<em>float</em>) &#8211; l&#8217;échelle globale (pixel/mètre)</li>
 </ul>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="jongle.objetphysique.ObjetPhysique.numero">
+<code class="descname">numero</code><a class="headerlink" href="#jongle.objetphysique.ObjetPhysique.numero" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>cette propriété permet d&#8217;interroger le numéro de l&#8217;image en cours.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Retourne:</th><td class="field-body">numéro de l&#8217;image</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type retourné:</th><td class="field-body">int</td>
 </tr>
 </tbody>
 </table>
@@ -509,7 +532,7 @@ d&#8217;une image SVG.</p>
 <dt id="jongle.objetphysique.ObjetPhysique.t">
 <code class="descname">t</code><a class="headerlink" href="#jongle.objetphysique.ObjetPhysique.t" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>cette propriété permet d&#8217;interroger la date ; en fait celle-ci est
-héritée du parent, et elle est liée un nuvéro de l&#8217;image en cours
+héritée du parent, et elle est liée un numéro de l&#8217;image en cours
 de traitement. Comme dans la mécanique newtonnienne, le temps est
 universel.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -527,27 +550,8 @@ universel.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-jongle.opencv">
-<span id="module-jongle-opencv"></span><h2>module jongle.opencv<a class="headerlink" href="#module-jongle.opencv" title="Lien permanent vers ce titre">¶</a></h2>
-<dl class="function">
-<dt id="jongle.opencv.videoToRgbFrameList">
-<code class="descclassname">jongle.opencv.</code><code class="descname">videoToRgbFrameList</code><span class="sig-paren">(</span><em>videofile</em><span class="sig-paren">)</span><a class="headerlink" href="#jongle.opencv.videoToRgbFrameList" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>transforme une vidéo lisible par openCV en une liste d&#8217;images au
-format RGB.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><strong>videofile</strong> (<em>str</em>) &#8211; chemin d&#8217;un fichier vidéo</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Retourne:</th><td class="field-body">liste d&#8217;images RGB</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Type retourné:</th><td class="field-body">numpy Array</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
+<div class="section" id="module-jongle-opencv">
+<h2>module jongle.opencv<a class="headerlink" href="#module-jongle-opencv" title="Lien permanent vers ce titre">¶</a></h2>
 </div>
 <div class="section" id="module-jongle.svgwidget">
 <span id="module-jongle-svgwidget"></span><h2>module jongle.svgwidget<a class="headerlink" href="#module-jongle.svgwidget" title="Lien permanent vers ce titre">¶</a></h2>
@@ -620,7 +624,7 @@ dès lors que self.bg est défini</p>
 <li><a class="reference internal" href="#module-jongle.main">module jongle.main</a></li>
 <li><a class="reference internal" href="#module-jongle.matrix">module jongle.matrix</a></li>
 <li><a class="reference internal" href="#module-jongle.objetphysique">module jongle.objetphysique</a></li>
-<li><a class="reference internal" href="#module-jongle.opencv">module jongle.opencv</a></li>
+<li><a class="reference internal" href="#module-jongle-opencv">module jongle.opencv</a></li>
 <li><a class="reference internal" href="#module-jongle.svgwidget">module jongle.svgwidget</a></li>
 </ul>
 </li>
