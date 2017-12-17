@@ -41,15 +41,14 @@ class CodeEdit(QsciScintilla):
         api = QsciAPIs(lexer)
         # importation du fichier d'API
         if api.load("/usr/share/qt5/qsci/api/python/Python-3.5.api"):
-            print("\nL'installation de Python-3.5.api produirait une erreur de segmentation")
-            #api.prepare()
-            #self.setAutoCompletionThreshold(1)
-            #self.setAutoCompletionSource(QsciScintilla.AcsAll)
+            api.prepare()
+            self.setAutoCompletionThreshold(1)
+            self.setAutoCompletionSource(QsciScintilla.AcsAll)
         """
-
-from PyQt5.QtWidgets import QApplication
-import sys
+        
 if __name__ == "__main__":
+    from PyQt5.QtWidgets import QApplication
+    import sys
     app = QApplication(sys.argv)
     editor = CodeEdit()
     editor.show()
