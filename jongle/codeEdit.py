@@ -10,6 +10,7 @@ class CodeEdit(QsciScintilla):
         font.setPointSize(12)
         self.setFont(font)
 
+
         # Margin 0 is used for line numbers
         fontmetrics = QFontMetrics(font)
         self.setMarginsFont(font)
@@ -29,6 +30,10 @@ class CodeEdit(QsciScintilla):
         lexer = QsciLexerPython()
         lexer.setDefaultFont(font)
         self.setLexer(lexer)
+
+        # Auto-indentation
+        self.setAutoIndent(True)
+         
 
 
 from PyQt5.QtWidgets import QApplication
