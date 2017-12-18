@@ -2,6 +2,8 @@
 
 Commande pour les tests (et pour les impatients) : `./jongle.py`
 
+Démonstration d'une simulation « finie » : `./ffa-demo`
+
 ## But du projet ##
 
 Georges Khaznadar fait partie des auteurs de l'application pymecavideo,
@@ -37,5 +39,6 @@ vidéo qui superpose la ou les icônes avec la vidéo de fond.
 ## Dépendences ##
     python3-pyqt5
     python3-pyqt5.qsci
+	python3-pyqt5.svg
     python3-opencv
-	libqscintilla2-doc (pour l'auto-completion)
+	libqscintilla2-doc (pour l'auto-completion ... pas encore stabilisée)

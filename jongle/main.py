@@ -1,11 +1,14 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import sys, inspect, pydoc, os.path, cv2, io
+import sys, inspect, pydoc, os.path, cv2, io, os, os.path
 
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg
-from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo, QSize
-from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtCore import Qt, QTranslator, QLocale, QLibraryInfo, QSize, \
+    QXmlStreamReader
+from PyQt5.QtGui import QPalette, QColor, QPixmap, QIcon, QImage, QPainter
+from PyQt5.QtWidgets import QLabel, QTableWidgetItem
+from PyQt5.QtSvg import QSvgRenderer
 from xml.dom import minidom
 from collections import OrderedDict
 from xml.dom.minidom import parseString
@@ -17,7 +20,6 @@ from .matrix import matrix
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None,
-                 svg=None,
                  delta_t=None,
                  ech=None,
                  videofile=None,
@@ -28,8 +30,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         :param parent: un parent
         :type parent: QWidget
-        :param svg: un nom de fichier au format SVG
-        :type svg: str
         :param delta_t: l'intervalle de temps entre deux images; la fonction
           de rappel self.runhooks est appelée entre deux images
         :type delta_t: float
@@ -47,9 +47,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.delta_t=delta_t if delta_t else 40e-3
         self.ech=ech if ech else 200
         self.progFileName=None
-        # trouve les objets physiques et ajoute des widgets pour y accéder
-        self.objetsPhysiques=self.trouveObjetsPhysiques(minidom.parse(svg))
-        self.afficheListeObjets()
         self.ui.tabWidget.setCurrentWidget(self.ui.sceneTab)
         self.currentFrame=0
         self.stillFrame=0 # pointeur vers l'image gelée
@@ -60,8 +57,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.videoHeight, self.videoWidth, _ =  self.frames[0].shape
         self.count=len(self.frames)
         self.ui.progressBar.setRange(0,self.count)
-        doc=self.SVGObjets()
-        self.ui.svgWidget.refresh(doc, self.frames[0])
 
         self.simulated = False
         self.ui.simulButton.setEnabled(True)
@@ -79,6 +74,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.timer.start(1000*self.delta_t)
         # compile et enregistre les fonctions de l'onglet d'édition
         self.enregistreFonctions()
+        # peuple l'onglet des images
+        self.stockObjetsPhysique=OrderedDict()
+        self.getImages()
+        # trouve les objets physiques et ajoute des widgets pour y accéder
+        self.objetsPhysiques=self.objetsCoches()
+        self.afficheListeObjets()
+        # affiche la première image avec les objets SVG en haut à gauche
+        doc=self.SVGObjets()
+        self.ui.svgWidget.refresh(doc, self.frames[0])
         return
 
     def connectUi(self):
@@ -99,6 +103,91 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.progEdit.textChanged.connect(self.dirty)
         return
 
+    def objetsCoches(self):
+        """
+        parcourt le tableau des images et ramène au moins un objet
+        en se basant sur les cases cochées
+        :return: un dictionnaire ordonné d'objets physiques
+        :rtype: OrderedDict(((nom, ObjetPhysique),...))
+        """
+        result=OrderedDict()
+        t=self.ui.tableWidget
+        noms=list(self.stockObjetsPhysique.keys())
+        for i in range(t.rowCount()):
+            if t.item(i,0).checkState()==Qt.Checked:
+                result[noms[i]]=self.stockObjetsPhysique[noms[i]]
+        # traite le cas où aucune case n'aurait été cochée
+        # alors, ça coche autoritairement la première venue
+        if not len(result):
+            result[noms[0]]=self.stockObjetsPhysique[noms[0]]
+            t.item(0,0).setCheckState(Qt.Checked)
+        return result
+
+    def getImages(self):
+        self.stockObjetsPhysique=OrderedDict()
+        size=70 # la taille des images 2D du répertoire image
+        premiereCochee=False # booléen pour cocher la 1ère ligne par défaut
+        t=self.ui.tableWidget
+        t.horizontalHeader().setVisible(True)
+        t.setRowCount(0) # vide la table des images
+        top=os.path.join(os.path.dirname(os.path.dirname(__file__)),"images")
+        for root, dirs, files in os.walk(top, topdown=False):
+            for f in sorted(files): # met en tête 000-ballon.svg
+                if f[-4:].lower()==".svg":
+                    svgFile=os.path.join(root,f)
+                    objetsPhysiques=self.trouveObjetsPhysiques(
+                        minidom.parse(svgFile))
+                    for opNom in objetsPhysiques:
+                        self.stockObjetsPhysique[opNom]=objetsPhysiques[opNom]
+                        svgCode="<svg>\n{}\n</svg>".format(
+                            objetsPhysiques[opNom].g.toxml())
+                        t.setRowCount(t.rowCount()+1)
+                        t.setRowHeight(t.rowCount()-1, size)
+                        # une case à cocher
+                        tw=QTableWidgetItem()
+                        if premiereCochee:
+                            tw.setCheckState(Qt.Unchecked)
+                        else:
+                            tw.setCheckState(Qt.Checked)
+                            premiereCochee=True
+                        t.setItem(t.rowCount()-1,0,tw)
+                        # le nom de fichier (sans le chemin)
+                        t.setItem(t.rowCount()-1,1,QTableWidgetItem(f))
+                        # le nom de l'image
+                        t.setItem(t.rowCount()-1,2,QTableWidgetItem(opNom))
+                        # la dimension native de l'image
+                        t.setItem(t.rowCount()-1,3,QTableWidgetItem(
+                            "{size}×{size} pixels".format(size=size)))
+                        # une icône avec l'image
+                        l=self.svgLabel(svgCode, size)
+                        t.setCellWidget(t.rowCount()-1,4,l)
+        t.setHorizontalHeaderLabels([
+            self.tr('Use'), self.tr('File'), self.tr('Name'),
+            self.tr('Size'), self.tr('Image')
+        ])
+        for i in range(4):
+            t.resizeColumnToContents(i)
+        return
+
+    @staticmethod
+    def svgLabel(svgCode, size):
+        """
+        transforme un code SVG en un label orné d'une image
+        :param svgCode: un code SVG valide <svg>...</svg>
+        :type  svgCode: bytes
+        :param size: la taille du label carré (taille du rendu)
+        :type  size: int
+        """
+        renderer=QSvgRenderer(QXmlStreamReader(svgCode))
+        im=QImage(QSize(size,size),QImage.Format_ARGB32)
+        painter=QPainter(im)
+        renderer.render(painter)
+        painter.end()
+        pm=QPixmap.fromImage(im)
+        l=QLabel()
+        l.setPixmap(pm)
+        return l
+    
     def dirty(self):
         """
         invalide la source Python, il faudra recompiler
@@ -523,10 +612,6 @@ def main():
     parser.add_option("-s", "--scale",
                       action="store", type="int", dest="scale",
                       default=290)
-    parser.add_option("-g", "--svg",
-                      action="store", type="string", dest="svg",
-                      default=os.path.join(os.path.dirname(__file__),"../ballon.svg")
-    )
     parser.add_option("-t", "--deltat",
                       action="store", type="float", dest="deltat",
                       default=40e-3
@@ -546,7 +631,7 @@ def main():
             QLibraryInfo.location(QLibraryInfo.TranslationsPath))
     app.installTranslator(t1)
 
-    w=MainWindow(svg=options.svg, delta_t=options.deltat, ech=options.scale,
+    w=MainWindow(delta_t=options.deltat, ech=options.scale,
                  videofile=options.video, progfile=options.prog
     )
 
