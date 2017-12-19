@@ -1,13 +1,13 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import sys, inspect, pydoc, os.path, cv2, io, os, os.path
+import sys, inspect, pydoc, os.path, cv2, io, os, os.path, re
 
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg
 from PyQt5.QtCore import Qt, QTranslator, QLocale, QLibraryInfo, QSize, \
     QXmlStreamReader
 from PyQt5.QtGui import QPalette, QColor, QPixmap, QIcon, QImage, QPainter
-from PyQt5.QtWidgets import QLabel, QTableWidgetItem
+from PyQt5.QtWidgets import QLabel, QTableWidgetItem, QSpinBox
 from PyQt5.QtSvg import QSvgRenderer
 from xml.dom import minidom
 from collections import OrderedDict
@@ -78,8 +78,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.stockObjetsPhysique=OrderedDict()
         self.getImages()
         # trouve les objets physiques et ajoute des widgets pour y accéder
-        self.objetsPhysiques=self.objetsCoches()
-        self.afficheListeObjets()
+        self.recenseObjets()
         # affiche la première image avec les objets SVG en haut à gauche
         doc=self.SVGObjets()
         self.ui.svgWidget.refresh(doc, self.frames[0])
@@ -103,24 +102,62 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.progEdit.textChanged.connect(self.dirty)
         return
 
-    def objetsCoches(self):
+    def recenseBientot(self):
+        """
+        fonction de rappel pour self.recenseObjets, mais qui le 
+        programme pour le prochain tour de la boucle principale
+        """
+        t=QtCore.QTimer.singleShot(0, self.recenseObjets)
+        
+    def recenseObjets(self):
         """
         parcourt le tableau des images et ramène au moins un objet
-        en se basant sur les cases cochées
-        :return: un dictionnaire ordonné d'objets physiques
-        :rtype: OrderedDict(((nom, ObjetPhysique),...))
+        en se basant sur les cases cochées. Met à jour
+        self.ObjetsPhysiques
         """
-        result=OrderedDict()
+        self.objetsPhysiques=OrderedDict()
         t=self.ui.tableWidget
         noms=list(self.stockObjetsPhysique.keys())
         for i in range(t.rowCount()):
-            if t.item(i,0).checkState()==Qt.Checked:
-                result[noms[i]]=self.stockObjetsPhysique[noms[i]]
+            for j in range(t.cellWidget(i,0).value()):
+                nom=noms[i]
+                while nom in self.objetsPhysiques.keys():
+                    # éviter les collisions d'entrées dans le dictionnaire
+                    nom=self.incrementeNom(nom)
+                op=self.stockObjetsPhysique[noms[i]].copy()
+                op.id=nom
+                self.objetsPhysiques[nom]=op
         # traite le cas où aucune case n'aurait été cochée
         # alors, ça coche autoritairement la première venue
-        if not len(result):
-            result[noms[0]]=self.stockObjetsPhysique[noms[0]]
-            t.item(0,0).setCheckState(Qt.Checked)
+        # du coup la fonction se rappelle elle-même à cause de
+        # l'évènement valueChanged au tout de boucle suivant
+        if not len(self.objetsPhysiques):
+            t.cellWidget(0,0).setValue(1)
+        # crée les contrôles des objets en bas de la fenêtre
+        self.afficheListeObjets()
+        return
+
+    def incrementeNom(self, nom):
+        """
+        Change un nom compte tenu des entrées déjà présentes
+        dans le dictionnaire self.objetsPhysiques
+        :param nom: une base de nom
+        :type  nom: str
+        :return: une entrée nouvelle pour dico
+        :rtype: str
+        """
+        pattern=r"(.*[^\d])(\d*)"
+        m=re.match(pattern, nom)
+        if not m.group(2):
+            prefix=nom+"-"
+            num=0
+        else:
+            prefix=m.group(1)
+            num=int(m.group(2))
+        result="{}{}".format(prefix,num)
+        while result in self.objetsPhysiques.keys():
+            num+=1
+            result="{}{}".format(prefix,num)
         return result
 
     def getImages(self):
@@ -138,19 +175,23 @@ class MainWindow(QtWidgets.QMainWindow):
                     objetsPhysiques=self.trouveObjetsPhysiques(
                         minidom.parse(svgFile))
                     for opNom in objetsPhysiques:
-                        self.stockObjetsPhysique[opNom]=objetsPhysiques[opNom]
+                        nom=opNom
+                        while nom in self.stockObjetsPhysique.keys():
+                            # empêche deux noms identiques
+                            nom+="_"
+                        self.stockObjetsPhysique[nom]=objetsPhysiques[opNom]
                         svgCode="<svg>\n{}\n</svg>".format(
                             objetsPhysiques[opNom].g.toxml())
                         t.setRowCount(t.rowCount()+1)
                         t.setRowHeight(t.rowCount()-1, size)
-                        # une case à cocher
-                        tw=QTableWidgetItem()
-                        if premiereCochee:
-                            tw.setCheckState(Qt.Unchecked)
-                        else:
-                            tw.setCheckState(Qt.Checked)
+                        # un compteur
+                        sp=QSpinBox()
+                        sp.setRange(0,9)
+                        if not premiereCochee:
+                            sp.setValue(1)
                             premiereCochee=True
-                        t.setItem(t.rowCount()-1,0,tw)
+                        sp.valueChanged.connect(self.recenseBientot)
+                        t.setCellWidget(t.rowCount()-1,0,sp)
                         # le nom de fichier (sans le chemin)
                         t.setItem(t.rowCount()-1,1,QTableWidgetItem(f))
                         # le nom de l'image
@@ -319,23 +360,25 @@ class MainWindow(QtWidgets.QMainWindow):
             if not self.dragging: return # cette ligne est redondante
             mv=event.pos() - self.prevPos
             objetsPhysiques=self.trajectoires[self.stillFrame]
-            for _,o in objetsPhysiques.items():
+            for ident,o in objetsPhysiques.items():
                 if not o.cb.isChecked(): continue
                 self.dirty() # si on a bougé il faut re-simuler
                 o.moveInSVG(mv, self.ech)
-                self.setCbText(o)
+                self.setCbText(ident,o)
             self.refresh(self.stillFrame)
             self.prevPos=event.pos()
         return
 
-    def setCbText(self,op):
+    def setCbText(self,ident,op):
         """
         ajuste le texte d'une case à cocher
         
+        :param ident: un nom
+        :type  ident: str
         :param op: un objet physique
         :type  op: ObjetPhysique
         """
-        op.cb.setText("%s (%6.2f, %6.2f)" %(op.id, op.x, op.y))
+        op.cb.setText("%s (%6.2f, %6.2f)" %(ident, op.x, op.y))
         return
 
     def mousePressEvent(self, event):
@@ -407,16 +450,23 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def afficheListeObjets(self):
         """
-        Affiche la liste des objetx en bas du premier ongle, et ajoute
+        Affiche la liste des objets en bas du premier onglet, et ajoute
         pour chacun une case à cocher si on le veut déplaçable à la souris
         """
         poBox=self.ui.poBox
         layout = poBox.layout()
+        # supprime les objets précédemment affichés
+        for i in reversed(range(1,layout.count())): 
+            layout.itemAt(i).widget().setParent(None)
+            # selon la doc:
+            # The new widget is deleted when its parent is deleted
         for ident,o in  self.objetsPhysiques.items():
-            b=QtWidgets.QCheckBox("%s (%6.2f, %6.2f)" %(o.id, o.x, o.y),poBox)
+            b=QtWidgets.QCheckBox("%s (%6.2f, %6.2f)" %(ident, o.x, o.y),poBox)
             o.cb=b
             layout.addWidget(b)
             b.stateChanged.connect(self.selectObject(o))
+        self.dirty()
+        return
 
     def selectObject(self,op):
         """
@@ -472,9 +522,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.progressBar.setPalette(self.paletteProgressVideo)
         self.ui.progressBar.setValue(self.currentFrame)
         objetsPhysique=self.trajectoires[self.currentFrame]
-        for _,o in objetsPhysique.items():
+        for ident,o in objetsPhysique.items():
             # met à jour les positions affichées des objets physiques
-            self.setCbText(o)
+            self.setCbText(ident,o)
         # définit self.stillFrame au cas où l'animation est arretée
         if not self.timer.isActive():
             self.stillFrame=self.currentFrame
