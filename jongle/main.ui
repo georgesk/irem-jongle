@@ -36,6 +36,12 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QToolButton" name="backButton">
          <property name="minimumSize">
@@ -55,7 +61,8 @@
          </property>
          <property name="icon">
           <iconset theme="media-skip-backward-symbolic">
-           <normaloff>.</normaloff>.</iconset>
+           <normaloff/>
+          </iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -81,7 +88,8 @@
          </property>
          <property name="icon">
           <iconset theme="media-seek-backward-symbolic">
-           <normaloff>.</normaloff>.</iconset>
+           <normaloff/>
+          </iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -113,7 +121,8 @@
          </property>
          <property name="icon">
           <iconset theme="media-playback-start-symbolic">
-           <normaloff>.</normaloff>.</iconset>
+           <normaloff/>
+          </iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -139,7 +148,8 @@
          </property>
          <property name="icon">
           <iconset theme="media-seek-forward-symbolic">
-           <normaloff>.</normaloff>.</iconset>
+           <normaloff/>
+          </iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -171,7 +181,8 @@
          </property>
          <property name="icon">
           <iconset theme="system-run-symbolic">
-           <normaloff>.</normaloff>.</iconset>
+           <normaloff/>
+          </iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -361,6 +372,12 @@
        <string>Physical objects (can be moved when checked)</string>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <spacer name="horizontalSpacer_3">
          <property name="orientation">
@@ -385,7 +402,7 @@
      <x>0</x>
      <y>0</y>
      <width>908</width>
-     <height>20</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
